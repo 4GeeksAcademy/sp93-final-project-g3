@@ -49,7 +49,6 @@
 		"html-loader": "^3.0.1",
 		"html-webpack-plugin": "^5.5.0",
 		"parse-github-url": "^1.0.2",
-		"prettier": "^2.5.1",
 		"remote-origin-url": "^2.0.0",
 		"style-loader": "^3.3.1",
 		"webpack": "^5.65.0",
