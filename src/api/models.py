@@ -16,8 +16,8 @@ class Users(db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     gender = db.Column(db.String(50), nullable=False)
     age = db.Column(db.Integer, nullable=False)
-    photo = db.Column(db.String(255), nullable=True)  
-    biography = db.Column(db.String(500), nullable=True) 
+    photo = db.Column(db.String(300))  
+    biography = db.Column(db.String(500)) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     
     # Relación uno a muchos con el modelo Trip
@@ -47,7 +47,7 @@ class Users(db.Model):
             'age': self.age,
             'photo': self.photo,
             'biography': self.biography,
-            'created_at': self.created_at.isoformat(),
+            'created_at': self.created_at.strftime(),
             'is_active': self.is_active,
             'is_admin': self.is_admin,
             'trips': [trip.serialize() for trip in self.trips],
@@ -61,7 +61,7 @@ def validate_gender(value):
     return value
 
 # Definimos un Enum para los estados del viaje
-class TripStatus(enum.Enum):
+class TripStatus(Enum):
     PENDING = "Pending"
     CONFIRMED = "Confirmed"
     CANCELLED = "Cancelled"
@@ -72,13 +72,13 @@ class Trip(db.Model):
     host_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)  # Clave foránea a Users
     destination = db.Column(db.String(50), nullable=False)
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    end_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     available_seats = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(200), nullable=False)
-    photo = db.Column(db.String(255), nullable=True)  # Imagen opcional
+    photo = db.Column(db.String(255))  # Imagen opcional
     budget = db.Column(db.Integer, nullable=False)
     age_range = db.Column(db.String(10), nullable=False)  # Por ejemplo, "18-25" o "30-40"
-    status = db.Column(db.Enum(TripStatus), nullable=False, default=TripStatus.PENDING)  # Enum con estado inicial
+    status = db.Column(db.Enum(TripStatus), nullable=False, default=TripStatus.PENDING) # Enum con estado inicial
 
     # 🔹 Constructor para crear un objeto Trip fácilmente
     def __init__(self, host_id, destination, start_date, end_date, available_seats, description, budget, age_range, status=TripStatus.PENDING, photo=None):
@@ -102,8 +102,8 @@ class Trip(db.Model):
             'id': self.id,
             'host_id': self.host_id,
             'destination': self.destination,
-            'start_date': self.start_date.isoformat(),
-            'end_date': self.end_date.isoformat(),
+            'start_date': self.start_date.strftime(),
+            'end_date': self.end_date.strftime(),
             'available_seats': self.available_seats,
             'description': self.description,
             'photo': self.photo,
@@ -157,14 +157,14 @@ class Notifications(db.Model):
             'user_id': self.user_id,
             'message': self.message,
             'read': self.read,
-            'date': self.date.isoformat()
+            'date': self.date.strftime()
         }
 
 
 class Travelers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"), nullable=False)
-    traveler_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)  # Corregido "user.id" a "users.id"
+    traveler_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)  
     status = db.Column(db.Enum(TripStatus), nullable=False, default=TripStatus.PENDING)
     approved_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)  # Puede ser nulo si no ha sido aprobado
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -187,8 +187,8 @@ class Travelers(db.Model):
             'trip_id': self.trip_id,
             'traveler_id': self.traveler_id,
             'status': self.status.value,  # Retorna el valor del Enum
-            'approved_at': self.approved_at.isoformat() if self.approved_at else None,
-            'created_at': self.created_at.isoformat()
+            'approved_at': self.approved_at.strftime() if self.approved_at else None,
+            'created_at': self.created_at.strftime()
         }
 
 
