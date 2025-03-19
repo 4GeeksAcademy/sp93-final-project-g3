@@ -75,10 +75,10 @@ class Trips(db.Model):
 
 class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    trip_id = db.Column(db.Integer, db.ForeignKey("trips.id"), nullable=False)
-    trip_to = db.relationship("Trips", foreign_keys=[trip_id], backref=db.backref('trip_to', lazy='select'))
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user_to = db.relationship("Users", foreign_keys=[user_id], backref=db.backref('user_to', lazy='select'))
+    trip_id = db.Column(db.Integer, db.ForeignKey("trips.id"))
+    trip_to = db.relationship("Trips", foreign_keys=[trip_id], backref=db.backref('favorite_to', lazy='select'))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_to = db.relationship("Users", foreign_keys=[user_id], backref=db.backref('favorite_to', lazy='select'))
 
     def __repr__(self):
         return f'<Favorite {self.id} - User {self.user_id} - Trip {self.trip_id}>'
@@ -95,7 +95,7 @@ class Notifications(db.Model):
     read = db.Column(db.Boolean(), nullable=False, default=False)
     date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user_to = db.relationship("Users", foreign_keys=[user_id], backref=db.backref('user_to', lazy='select'))
+    user_to = db.relationship("Users", foreign_keys=[user_id], backref=db.backref('notification_to', lazy='select'))
 
     def __repr__(self):
         return f'<Notification {self.id} - User {self.user_id} - Read {self.read}>'
@@ -110,10 +110,10 @@ class Notifications(db.Model):
 
 class Travelers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum('approved', 'declined', 'pending', 'cancelled', name='status'), nullable=False )
+    status = db.Column(db.Enum('approved', 'declined', 'pending', 'cancelled', name='status'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     trip_id = db.Column(db.Integer, db.ForeignKey("trips.id"), nullable=False)
-    trip_to = db.relationship("Users", foreign_keys=[trip_id], backref=db.backref('trip_to', lazy='select'))
+    trip_to = db.relationship("Trips", foreign_keys=[trip_id], backref=db.backref('traveler_to', lazy='select'))
     traveler_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False) 
     traveler_to = db.relationship("Users", foreign_keys=[traveler_id], backref=db.backref('traveler_to', lazy='select'))
 
@@ -124,7 +124,7 @@ class Travelers(db.Model):
         return {'id': self.id,
             'trip_id': self.trip_id,
             'traveler_id': self.traveler_id,
-            'status': self.status.value,  # Retorna el valor del Enum
+            'status': self.status, 
             'created_at': self.created_at.strftime()}
 
 
