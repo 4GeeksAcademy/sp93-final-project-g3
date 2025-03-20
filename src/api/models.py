@@ -33,7 +33,7 @@ class Users(db.Model):
             'age': self.age,
             'photo': self.photo,
             'biography': self.biography,
-            'created_at': self.created_at.strftime(),
+            'created_at': self.created_at.strftime("%d %m %y"),
             'is_active': self.is_active,
             'is_admin': self.is_admin}
 
