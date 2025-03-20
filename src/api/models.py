@@ -43,14 +43,14 @@ class Trips(db.Model):
     destination = db.Column(db.String(50), nullable=False)
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     end_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    available_seats = db.Column(db.Integer, nullable=False)
+    available_seats = db.Column(db.Integer)
     description = db.Column(db.String(200), nullable=False)
     photo = db.Column(db.String(255))  # Imagen opcional
     budget = db.Column(db.Integer, nullable=False)
     budget_currency = db.Column(db.String(), nullable=False)
-    age_min = db.Column(db.Integer, nullable=False)
-    age_max = db.Column(db.Integer, nullable=False)
-    status = db.Column(db.Enum('planning', 'finished', 'ongoing', 'cancelled', name='status'), nullable=False ) # Enum con estado inicial
+    age_min = db.Column(db.Integer)
+    age_max = db.Column(db.Integer)
+    status = db.Column(db.Enum('planning', 'finished', 'ongoing', 'cancelled', name='status'), nullable=False) # Enum con estado inicial
     host_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)  # Clave foránea a Users
     host_to = db.relationship('Users', foreign_keys=[host_id], backref=db.backref('host_to', lazy='select'))
    
@@ -61,8 +61,8 @@ class Trips(db.Model):
         return {'id': self.id,
             'host_id': self.host_id,
             'destination': self.destination,
-            'start_date': self.start_date.strftime(),
-            'end_date': self.end_date.strftime(),
+            'start_date': self.start_date.strftime("%d %m %y"),
+            'end_date': self.end_date.strftime("%d %m %y"),
             'available_seats': self.available_seats,
             'description': self.description,
             'photo': self.photo,
@@ -70,7 +70,7 @@ class Trips(db.Model):
             'budget_currency': self.budget_currency,
             'age_min': self.age_min,
             'age_max': self.age_max,
-            'status': self.status.value}
+            'status': self.status}
 
 
 class Favorites(db.Model):
