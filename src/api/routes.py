@@ -12,6 +12,7 @@ from flask_jwt_extended import get_jwt
 import requests
 
 
+
 api = Blueprint('api', __name__)
 CORS(api)  # Allow CORS requests to this API
 
@@ -27,6 +28,7 @@ def register_user():
     response_body = {}
     data = request.json
 
+
     row = Users(email=data['email'], password=data['password'])
     db.session.add(row)
     db.session.commit()
@@ -40,7 +42,7 @@ def register_user():
     response_body['message'] = 'User registered successfully'
     response_body['access_token'] = access_token
     response_body['results'] = user
-    return response_body, 200
+    return jsonify(response_body), 200
 
 
 @api.route("/login", methods=["POST"])
@@ -113,8 +115,100 @@ def edit_user():
 
 
 
+
+# PUT /trips/{id} → Editar un viaje (solo anfitrión del viaje) me falta  escrito por :Sarto
+
+
+# POST /trips → Crear un viaje (solo anfitriones)
+@api.route('/trips', methods=['POST'])
+def post_trip():
+    response_body = {}
+    data = request.json
+    # Crear una nueva instancia de Trips
+    row = Trips(
+        id = data['id'],
+        destination=data['destination'],
+        start_date=datetime.strptime(data['start_date'], "%Y-%m-%d"),
+        end_date=datetime.strptime(data['end_date'], "%Y-%m-%d"),
+        available_seats=data['available_seats'],
+        description=data['description'],
+        photo=data.get('photo',''),  
+        budget=data['budget'],
+        budget_currency=data['budget_currency'],
+        age_min=data.get('age_min'),  
+        age_max=data.get('age_max'), 
+        status=data['status'],
+        host_id=data['host_id']
+    )
+    # Añadir y commitear la nueva instancia a la base de datos
+    db.session.add(row)
+    db.session.commit()
+    # Serializar el objeto Trips para la respuesta
+    trip = row.serialize()
+    claims = {'trip_id': trip['id']}
+    print(claims)
+    response_body['message'] = 'Trip created successfully'
+    response_body['results'] = trip
+    return jsonify(response_body), 200
+
+
+# GET /trips/{id} → Ver detalles de un viaje
+@api.route('/trips/<int:trip_id>', methods=['GET'])
+def get_trip(trip_id):
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body = {
+            "error": "Trip not found"
+        }
+        return jsonify(response_body), 404
+
+    response_body = {
+        "message": "Trip retrieved successfully",
+        "results": trip.serialize()
+    }
+    return jsonify(response_body), 200
+
+
+# GET /trips → Listar todos los viajes disponibles (para viajeros)
+@api.route('/trips', methods=['GET'])
+def get_trips():
+    trips = Trips.query.all()
+    response_body = {
+        "message": "Trips retrieved successfully",
+        "results": [trip.serialize() for trip in trips]
+    }
+    return jsonify(response_body), 200
+
+# DELETE /trips/{id} → Cancelar un viaje (solo anfitrión del viaje)
+@api.route('/trips/<int:trip_id>', methods=['DELETE'])
+@jwt_required()  
+def delete_trip(trip_id):
+   
+    user_id = get_jwt_identity()
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body = {
+            "error": "Trip not found"
+        }
+        return jsonify(response_body), 404
+
+    
+    if trip.host_id != user_id: 
+        response_body = {
+            "error": "No tienes permiso para eliminar este viaje"
+        }
+        return jsonify(response_body), 403 
+
+   
+    db.session.delete(trip)
+    db.session.commit()
+
+    response_body = {
+        "message": "Trip deleted successfully"
+    }
+    return jsonify(response_body), 200
+
+
 #https://cloudinary.com/
 #endpoint load image
-
-
-
