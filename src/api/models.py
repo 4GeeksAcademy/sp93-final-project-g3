@@ -118,7 +118,7 @@ class Travelers(db.Model):
     traveler_to = db.relationship("Users", foreign_keys=[traveler_id], backref=db.backref('traveler_to', lazy='select'))
 
     def __repr__(self):
-        return f'<Traveler {self.id} - Trip {self.trip_id} - Traveler {self.traveler_id} - Status {self.status}>'
+        return f'<Traveler {self.id} - Trip {self.trip_id} - Traveler {self.traveler_id} - Authorization {self.authorization}>'
     # Método serialize para convertir el objeto a un formato JSON
     def serialize(self):
         return {'id': self.id,

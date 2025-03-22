@@ -216,7 +216,22 @@ def delete_trip(trip_id):
 def join_trip(trip_id):
     response_body = {}
     user_id = get_jwt()['user_id']
-    data = request.json
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    if trip.host_id == user_id:
+        response_body['message'] = "Host cannot join their own trip as a traveler"
+    
+    if trip.status == 'cancelled':
+        response_body['message'] = "Cannot join a cancelled trip"
+
+    existing_traveler = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
+    if existing_traveler:
+        response_body['message'] = "User is already a traveler in this trip"
+        return response_body, 400
+    # data = request.json
     row = Travelers(trip_id=trip_id, traveler_id=user_id)
     db.session.add(row)
     db.session.commit()
