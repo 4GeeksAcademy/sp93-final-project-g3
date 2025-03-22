@@ -4,11 +4,12 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from api.models import db, Users
+from api.models import db, Users, Trips, Travelers
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import get_jwt
+from datetime import datetime
 import requests
 
 
@@ -210,5 +211,21 @@ def delete_trip(trip_id):
     return jsonify(response_body), 200
 
 
+@api.route('/trips/<int:trip_id>/travelers', methods=['POST'])
+@jwt_required()
+def join_trip(trip_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+    data = request.json
+    row = Travelers(trip_id=trip_id, traveler_id=user_id)
+    db.session.add(row)
+    db.session.commit()
+    
+    response_body["message"] = "request created"
+    response_body["results"] = row.serialize()
+
+    return response_body, 200
+    
+
 #https://cloudinary.com/
-#endpoint load image
+#Endpoint load image
