@@ -341,5 +341,37 @@ def get_trip_travelers(trip_id):
     return response_body, 200
 
 
+@api.route('/trips/<int:trip_id>/leave', methods=['DELETE'])
+@jwt_required()
+def leave_trip(trip_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
+    if not traveler_request:
+        response_body['message'] = "You are not a traveler in this trip"
+        return response_body, 404
+    
+    if traveler_request.authorization == 'pending':
+        db.session.delete(traveler_request)
+        db.session.commit()
+        response_body['message'] = "Traveler request removed successfully"
+        return response_body, 200
+    
+    if traveler_request.authorization == 'approved':
+        traveler_request.authorization = 'cancelled'
+        db.session.commit()
+        response_body['message'] = "Traveler status updated to cancelled"
+        return response_body, 200
+    
+    response_body['message'] = "Cannot leave the trip in the current state"
+    return response_body, 400
+
+
 #https://cloudinary.com/
 #Endpoint load image
