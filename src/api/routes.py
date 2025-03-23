@@ -309,5 +309,37 @@ def decline_traveler(trip_id, traveler_id):
     return response_body, 200
 
 
+@api.route('/trips/<int:trip_id>/travelers', methods=['GET'])
+@jwt_required()
+def get_trip_travelers(trip_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    is_host = trip.host_id == user_id
+    is_approved_traveler = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id, authorization='approved').first() is not None
+
+    if not (is_host or is_approved_traveler):
+        response_body['message'] = "Only the host or approved travelers can view this list"
+        return response_body, 403
+    
+    travelers = Travelers.query.filter_by(trip_id=trip_id, authorization='approved').all()
+
+    if not travelers:
+        response_body['message'] = "No approved travelers found for this trip"
+        response_body['results'] = []
+        return response_body, 200
+        
+    travelers_list = [traveler.serialize() for traveler in travelers]
+
+    response_body['message'] = "List of travelers retrieved successfully"
+    response_body['results'] = travelers_list
+    return response_body, 200
+
+
 #https://cloudinary.com/
 #Endpoint load image
