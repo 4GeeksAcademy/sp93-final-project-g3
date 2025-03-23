@@ -264,16 +264,49 @@ def approve_traveler(trip_id, traveler_id):
         response_body['message'] = "Traveler request is not pending"
         return response_body, 400
     
-    """ if traveler_request.authorization != 'declined':
-        response_body['message'] = "Traveler request is not decline"
-        return response_body, 400 """
-    
     traveler_request.authorization = 'approved'
     db.session.commit()
     response_body['message'] = "Traveler request approved successfully"
     response_body['results'] = traveler_request.serialize()
     return response_body, 200
 
+
+@api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/decline', methods=['PUT'])
+@jwt_required()
+def decline_traveler(trip_id, traveler_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+    print(f"User ID from JWT: {user_id}")
+    print(f"Trip ID: {trip_id}")
+    print(f"Traveler ID: {traveler_id}")
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+        
+    print(f"Trip host_id: {trip.host_id}")
+
+    if trip.host_id != user_id:
+        response_body['message'] = "Only the host can decline travelers"
+        return response_body, 403
+    
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=traveler_id).first()
+    if not traveler_request:
+        response_body['message'] = "Traveler request not found"
+        return response_body, 404
+    
+    print(f"Traveler request status: {traveler_request.authorization}")
+    
+    if traveler_request.authorization != 'pending':
+        response_body['message'] = "Traveler request is not pending"
+        return response_body, 400
+    
+    traveler_request.authorization = 'declined'
+    db.session.commit()
+    response_body['message'] = "Traveler request declined successfully"
+    response_body['results'] = traveler_request.serialize()
+    return response_body, 200
 
 
 #https://cloudinary.com/
