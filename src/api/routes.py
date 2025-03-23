@@ -222,11 +222,11 @@ def join_trip(trip_id):
         return response_body, 404
     
     if trip.host_id == user_id:
-        response_body['message'] = "Host cannot join their own trip as a traveler"
-    
+        response_body['message'] = "Host cannot join their own trip as a traveler"  
+
     if trip.status == 'cancelled':
         response_body['message'] = "Cannot join a cancelled trip"
-
+        
     existing_traveler = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
     if existing_traveler:
         response_body['message'] = "User is already a traveler in this trip"
@@ -234,13 +234,47 @@ def join_trip(trip_id):
     # data = request.json
     row = Travelers(trip_id=trip_id, traveler_id=user_id)
     db.session.add(row)
-    db.session.commit()
-    
+    db.session.commit()  
     response_body["message"] = "request created"
     response_body["results"] = row.serialize()
 
     return response_body, 200
     
+
+@api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/approve', methods=['PUT'])
+@jwt_required()
+def approve_traveler(trip_id, traveler_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    if trip.host_id != user_id:
+        response_body['message'] = "Only the host can approve travelers"
+        response_body, 403
+
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=traveler_id).first()
+    if not traveler_request:
+        response_body['message'] = "Traveler request not found"
+        return response_body, 404
+    
+    if traveler_request.authorization != 'pending':
+        response_body['message'] = "Traveler request is not pending"
+        return response_body, 400
+    
+    """ if traveler_request.authorization != 'declined':
+        response_body['message'] = "Traveler request is not decline"
+        return response_body, 400 """
+    
+    traveler_request.authorization = 'approved'
+    db.session.commit()
+    response_body['message'] = "Traveler request approved successfully"
+    response_body['results'] = traveler_request.serialize()
+    return response_body, 200
+
+
 
 #https://cloudinary.com/
 #Endpoint load image
