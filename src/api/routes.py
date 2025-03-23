@@ -276,17 +276,12 @@ def approve_traveler(trip_id, traveler_id):
 def decline_traveler(trip_id, traveler_id):
     response_body = {}
     user_id = get_jwt()['user_id']
-    print(f"User ID from JWT: {user_id}")
-    print(f"Trip ID: {trip_id}")
-    print(f"Traveler ID: {traveler_id}")
 
     trip = Trips.query.get(trip_id)
     if not trip:
         response_body['message'] = "Trip not found"
         return response_body, 404
         
-    print(f"Trip host_id: {trip.host_id}")
-
     if trip.host_id != user_id:
         response_body['message'] = "Only the host can decline travelers"
         return response_body, 403
@@ -295,9 +290,7 @@ def decline_traveler(trip_id, traveler_id):
     if not traveler_request:
         response_body['message'] = "Traveler request not found"
         return response_body, 404
-    
-    print(f"Traveler request status: {traveler_request.authorization}")
-    
+        
     if traveler_request.authorization != 'pending':
         response_body['message'] = "Traveler request is not pending"
         return response_body, 400
