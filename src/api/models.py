@@ -110,7 +110,7 @@ class Notifications(db.Model):
 
 class Travelers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    authorization = db.Column(db.Enum('approved', 'declined', 'pending', 'cancelled', name='authorization'), default="pending")
+    authorization = db.Column(db.Enum('approved', 'declined', 'pending', 'cancelled', 'removed', name='authorization'), default="pending")
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     trip_id = db.Column(db.Integer, db.ForeignKey("trips.id"), nullable=False)
     trip_to = db.relationship("Trips", foreign_keys=[trip_id], backref=db.backref('traveler_to', lazy='select'))
