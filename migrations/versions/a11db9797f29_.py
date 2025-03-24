@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 2a256a3d698b
+Revision ID: a11db9797f29
 Revises: 
-Create Date: 2025-03-20 13:45:21.087785
+Create Date: 2025-03-21 21:07:11.577526
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2a256a3d698b'
+revision = 'a11db9797f29'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,7 +24,7 @@ def upgrade():
     sa.Column('password', sa.String(length=80), nullable=False),
     sa.Column('first_name', sa.String(length=50), nullable=True),
     sa.Column('last_name', sa.String(length=50), nullable=True),
-    sa.Column('gender', sa.Enum('please specify', 'male', 'female', 'non_binary', 'other', name='gender'), nullable=False),
+    sa.Column('gender', sa.Enum('male', 'female', 'non_binary', 'other', name='gender'), nullable=True),
     sa.Column('age', sa.Integer(), nullable=True),
     sa.Column('photo', sa.String(length=300), nullable=True),
     sa.Column('biography', sa.String(length=500), nullable=True),
@@ -48,13 +48,13 @@ def upgrade():
     sa.Column('destination', sa.String(length=50), nullable=False),
     sa.Column('start_date', sa.DateTime(), nullable=False),
     sa.Column('end_date', sa.DateTime(), nullable=False),
-    sa.Column('available_seats', sa.Integer(), nullable=False),
+    sa.Column('available_seats', sa.Integer(), nullable=True),
     sa.Column('description', sa.String(length=200), nullable=False),
     sa.Column('photo', sa.String(length=255), nullable=True),
     sa.Column('budget', sa.Integer(), nullable=False),
     sa.Column('budget_currency', sa.String(), nullable=False),
-    sa.Column('age_min', sa.Integer(), nullable=False),
-    sa.Column('age_max', sa.Integer(), nullable=False),
+    sa.Column('age_min', sa.Integer(), nullable=True),
+    sa.Column('age_max', sa.Integer(), nullable=True),
     sa.Column('status', sa.Enum('planning', 'finished', 'ongoing', 'cancelled', name='status'), nullable=False),
     sa.Column('host_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['host_id'], ['users.id'], ),
@@ -70,7 +70,7 @@ def upgrade():
     )
     op.create_table('travelers',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('status', sa.Enum('approved', 'declined', 'pending', 'cancelled', name='status'), nullable=False),
+    sa.Column('authorization', sa.Enum('approved', 'declined', 'pending', 'cancelled', name='authorization'), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('trip_id', sa.Integer(), nullable=False),
     sa.Column('traveler_id', sa.Integer(), nullable=False),

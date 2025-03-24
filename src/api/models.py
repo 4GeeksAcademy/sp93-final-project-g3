@@ -110,7 +110,7 @@ class Notifications(db.Model):
 
 class Travelers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Enum('approved', 'declined', 'pending', 'cancelled', name='status'), nullable=False)
+    authorization = db.Column(db.Enum('approved', 'declined', 'pending', 'cancelled', name='authorization'), default="pending")
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     trip_id = db.Column(db.Integer, db.ForeignKey("trips.id"), nullable=False)
     trip_to = db.relationship("Trips", foreign_keys=[trip_id], backref=db.backref('traveler_to', lazy='select'))
@@ -118,13 +118,13 @@ class Travelers(db.Model):
     traveler_to = db.relationship("Users", foreign_keys=[traveler_id], backref=db.backref('traveler_to', lazy='select'))
 
     def __repr__(self):
-        return f'<Traveler {self.id} - Trip {self.trip_id} - Traveler {self.traveler_id} - Status {self.status}>'
+        return f'<Traveler {self.id} - Trip {self.trip_id} - Traveler {self.traveler_id} - Authorization {self.authorization}>'
     # Método serialize para convertir el objeto a un formato JSON
     def serialize(self):
         return {'id': self.id,
             'trip_id': self.trip_id,
             'traveler_id': self.traveler_id,
-            'status': self.status, 
-            'created_at': self.created_at.strftime()}
+            'authorization': self.authorization, 
+            'created_at': self.created_at.strftime("%d %m %y")}
 
 

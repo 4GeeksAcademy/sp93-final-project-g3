@@ -4,11 +4,12 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from api.models import db, Users
+from api.models import db, Users, Trips, Travelers
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import get_jwt
+from datetime import datetime
 import requests
 
 
@@ -210,5 +211,160 @@ def delete_trip(trip_id):
     return jsonify(response_body), 200
 
 
+@api.route('/trips/<int:trip_id>/travelers', methods=['POST'])
+@jwt_required()
+def join_trip(trip_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    if trip.host_id == user_id:
+        response_body['message'] = "Host cannot join their own trip as a traveler"  
+
+    if trip.status == 'cancelled':
+        response_body['message'] = "Cannot join a cancelled trip"
+        
+    existing_traveler = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
+    if existing_traveler:
+        response_body['message'] = "User is already a traveler in this trip"
+        return response_body, 400
+    # data = request.json
+    row = Travelers(trip_id=trip_id, traveler_id=user_id)
+    db.session.add(row)
+    db.session.commit()  
+    response_body["message"] = "request created"
+    response_body["results"] = row.serialize()
+
+    return response_body, 200
+    
+
+@api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/approve', methods=['PUT'])
+@jwt_required()
+def approve_traveler(trip_id, traveler_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    if trip.host_id != user_id:
+        response_body['message'] = "Only the host can approve travelers"
+        response_body, 403
+
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=traveler_id).first()
+    if not traveler_request:
+        response_body['message'] = "Traveler request not found"
+        return response_body, 404
+    
+    if traveler_request.authorization != 'pending':
+        response_body['message'] = "Traveler request is not pending"
+        return response_body, 400
+    
+    traveler_request.authorization = 'approved'
+    db.session.commit()
+    response_body['message'] = "Traveler request approved successfully"
+    response_body['results'] = traveler_request.serialize()
+    return response_body, 200
+
+
+@api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/decline', methods=['PUT'])
+@jwt_required()
+def decline_traveler(trip_id, traveler_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+        
+    if trip.host_id != user_id:
+        response_body['message'] = "Only the host can decline travelers"
+        return response_body, 403
+    
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=traveler_id).first()
+    if not traveler_request:
+        response_body['message'] = "Traveler request not found"
+        return response_body, 404
+        
+    if traveler_request.authorization != 'pending':
+        response_body['message'] = "Traveler request is not pending"
+        return response_body, 400
+    
+    traveler_request.authorization = 'declined'
+    db.session.commit()
+    response_body['message'] = "Traveler request declined successfully"
+    response_body['results'] = traveler_request.serialize()
+    return response_body, 200
+
+
+@api.route('/trips/<int:trip_id>/travelers', methods=['GET'])
+@jwt_required()
+def get_trip_travelers(trip_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    is_host = trip.host_id == user_id
+    is_approved_traveler = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id, authorization='approved').first() is not None
+
+    if not (is_host or is_approved_traveler):
+        response_body['message'] = "Only the host or approved travelers can view this list"
+        return response_body, 403
+    
+    travelers = Travelers.query.filter_by(trip_id=trip_id, authorization='approved').all()
+
+    if not travelers:
+        response_body['message'] = "No approved travelers found for this trip"
+        response_body['results'] = []
+        return response_body, 200
+        
+    travelers_list = [traveler.serialize() for traveler in travelers]
+
+    response_body['message'] = "List of travelers retrieved successfully"
+    response_body['results'] = travelers_list
+    return response_body, 200
+
+
+@api.route('/trips/<int:trip_id>/leave', methods=['DELETE'])
+@jwt_required()
+def leave_trip(trip_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
+    if not traveler_request:
+        response_body['message'] = "You are not a traveler in this trip"
+        return response_body, 404
+    
+    if traveler_request.authorization == 'pending':
+        db.session.delete(traveler_request)
+        db.session.commit()
+        response_body['message'] = "Traveler request removed successfully"
+        return response_body, 200
+    
+    if traveler_request.authorization == 'approved':
+        traveler_request.authorization = 'cancelled'
+        db.session.commit()
+        response_body['message'] = "Traveler status updated to cancelled"
+        return response_body, 200
+    
+    response_body['message'] = "Cannot leave the trip in the current state"
+    return response_body, 400
+
+
 #https://cloudinary.com/
-#endpoint load image
+#Endpoint load image
