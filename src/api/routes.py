@@ -48,6 +48,7 @@ def register_user():
 
 @api.route("/login", methods=["POST"])
 def login():
+
     response_body = {}
     data = request.json
     print("soy data de login", data)
@@ -116,18 +117,78 @@ def edit_user():
 
 
 
+# PUT /trips/{id} → Editar un viaje (solo anfitrión del viaje)
+@api.route('/trips/<int:trip_id>', methods=['PUT'])
+@jwt_required()
+def update_trip(trip_id):
+    response_body = {}
+    data = request.json
 
-# PUT /trips/{id} → Editar un viaje (solo anfitrión del viaje) me falta  escrito por :Sarto
+    user_id = get_jwt()['user_id']
+    
+    row = Trips.query.get(trip_id)
+    if not row:
+        response_body = {
+            "error": "Trip not found"
+        }
+        return jsonify(response_body), 404
+    
+    if row.host_id != user_id:
+        response_body = {
+            "error": "No tienes permiso para editar este viaje"
+        }
+        return jsonify(response_body), 403
+
+    if 'destination' in data:
+        row.destination = data['destination']
+    if 'start_date' in data:
+        try:
+            row.start_date = datetime.strptime(data['start_date'], "%Y-%m-%d")
+        except ValueError:
+            response_body = {
+                "error": "Formato de fecha inválido para start_date. Use YYYY-MM-DD"
+            }
+            return jsonify(response_body), 400
+    if 'end_date' in data:
+        try:
+            row.end_date = datetime.strptime(data['end_date'], "%Y-%m-%d")
+        except ValueError:
+            response_body = {
+                "error": "Formato de fecha inválido para end_date. Use YYYY-MM-DD"
+            }
+            return jsonify(response_body), 400
+    if 'description' in data:
+        row.description = data['description']
+    if 'photo' in data:
+        row.photo = data['photo']
+    if 'budget' in data:
+        row.budget = data['budget']
+    if 'budget_currency' in data:
+        row.budget_currency = data['budget_currency']
+    if 'available_seats' in data:
+        row.available_seats = data['available_seats']
+    if 'status' in data:
+        row.status = data['status']
+
+    db.session.commit()
+
+    response_body = {
+        "message": "Viaje actualizado correctamente",
+        "results": row.serialize()
+    }
+    return jsonify(response_body), 200
 
 
 # POST /trips → Crear un viaje (solo anfitriones)
-@api.route('/trips', methods=['POST'])
-def post_trip():
+@api.route('/user/<int:user_id>/trips', methods=['POST'])
+@jwt_required()
+def post_trip(user_id):
     response_body = {}
+   
     data = request.json
-    # Crear una nueva instancia de Trips
+    user_id = get_jwt()['user_id']
+
     row = Trips(
-        id = data['id'],
         destination=data['destination'],
         start_date=datetime.strptime(data['start_date'], "%Y-%m-%d"),
         end_date=datetime.strptime(data['end_date'], "%Y-%m-%d"),
@@ -139,18 +200,19 @@ def post_trip():
         age_min=data.get('age_min'),  
         age_max=data.get('age_max'), 
         status=data['status'],
-        host_id=data['host_id']
+        host_id = user_id
+        
     )
-    # Añadir y commitear la nueva instancia a la base de datos
+
     db.session.add(row)
-    db.session.commit()
-    # Serializar el objeto Trips para la respuesta
+    db.session.commit()  
     trip = row.serialize()
     claims = {'trip_id': trip['id']}
-    print(claims)
-    response_body['message'] = 'Trip created successfully'
-    response_body['results'] = trip
-    return jsonify(response_body), 200
+    response_body["message"] = "request created"
+    response_body["results"] = trip
+
+    return response_body, 200
+
 
 
 # GET /trips/{id} → Ver detalles de un viaje
@@ -169,7 +231,6 @@ def get_trip(trip_id):
     }
     return jsonify(response_body), 200
 
-
 # GET /trips → Listar todos los viajes disponibles (para viajeros)
 @api.route('/trips', methods=['GET'])
 def get_trips():
@@ -182,10 +243,10 @@ def get_trips():
 
 # DELETE /trips/{id} → Cancelar un viaje (solo anfitrión del viaje)
 @api.route('/trips/<int:trip_id>', methods=['DELETE'])
-@jwt_required()  
-def delete_trip(trip_id):
-   
-    user_id = get_jwt_identity()
+@jwt_required() 
+def delete_trip(trip_id): #3
+    response_body = {}
+    user_id = get_jwt()['user_id']
 
     trip = Trips.query.get(trip_id)
     if not trip:
@@ -200,9 +261,22 @@ def delete_trip(trip_id):
             "error": "No tienes permiso para eliminar este viaje"
         }
         return jsonify(response_body), 403 
-
-   
-    db.session.delete(trip)
+    
+    # traveler = Travelers.query.filter_by(trip_id = trip_id, authorization = 'approved')
+    # traveler = db.session.execute(db.select(Travelers).where(Travelers.trip_id == int(trip_id),Travelers.authorization == 'approved')).scalars() 
+    print(traveler,"esto es console.log")
+    # if  len(traveler) > 0 :
+    #     response_body = {
+    #         "error": "You can't delete this trip because there are other travelers"
+    #     }
+    #     return jsonify (response_body), 405 
+    
+    # for row in traveler: 
+    #     db.session.delete(row)
+    #     # print(row.serialize())
+    
+    
+    # db.session.delete(trip)
     db.session.commit()
 
     response_body = {
