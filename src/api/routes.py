@@ -262,21 +262,20 @@ def delete_trip(trip_id): #3
         }
         return jsonify(response_body), 403 
     
-    # traveler = Travelers.query.filter_by(trip_id = trip_id, authorization = 'approved')
-    # traveler = db.session.execute(db.select(Travelers).where(Travelers.trip_id == int(trip_id),Travelers.authorization == 'approved')).scalars() 
-    print(traveler,"esto es console.log")
-    # if  len(traveler) > 0 :
-    #     response_body = {
-    #         "error": "You can't delete this trip because there are other travelers"
-    #     }
-    #     return jsonify (response_body), 405 
+    # traveler = Travelers.query.filter_by(trip_id = trip_id, authorization = 'approved')  
+   
     
-    # for row in traveler: 
-    #     db.session.delete(row)
-    #     # print(row.serialize())
+    traveler = db.session.execute(db.select(Travelers).where(Travelers.trip_id == int(trip_id),Travelers.authorization == 'approved')).scalar() 
+   
+    if  traveler :
+        response_body = {
+            "error": "You can't delete this trip because there are other travelers"
+        }
+        return jsonify (response_body), 405 
     
+    Travelers.query.filter_by(trip_id=trip_id).delete()
     
-    # db.session.delete(trip)
+    db.session.delete(trip)
     db.session.commit()
 
     response_body = {
