@@ -375,6 +375,34 @@ def decline_traveler(trip_id, traveler_id):
     return response_body, 200
 
 
+@api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/remove', methods=['DELETE'])
+@jwt_required()
+def remove_traveler(trip_id, traveler_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+        
+    if trip.host_id != user_id:
+        response_body['message'] = "Only the host can remove travelers"
+        return response_body, 403
+    
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=traveler_id).first()
+    if not traveler_request:
+        response_body['message'] = "Traveler request not found"
+        return response_body, 404
+        
+    traveler_request.authorization = 'removed'
+    db.session.delete(traveler_request)
+    db.session.commit()
+    response_body['message'] = "Traveler removed successfully"
+    response_body['results'] = traveler_request.serialize()
+    return response_body, 200
+
+
 @api.route('/trips/<int:trip_id>/travelers', methods=['GET'])
 @jwt_required()
 def get_trip_travelers(trip_id):
