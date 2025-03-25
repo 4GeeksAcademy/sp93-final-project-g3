@@ -4,7 +4,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from api.models import db, Users, Trips, Travelers
+from api.models import db, Users, Trips, Travelers, Favorites
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
@@ -466,6 +466,35 @@ def leave_trip(trip_id):
     response_body['message'] = "Cannot leave the trip in the current state"
     return response_body, 400
 
+@api.route('/trips/<int:trip_id>/favorites', methods=['POST', 'DELETE'])
+@jwt_required()
+def favorites(trip_id):
+    response_body= {}
+    user_id = get_jwt()['user_id']
+    if request.method == 'POST':
+        existing_fav = Favorites.query.filter_by(user_id=user_id, trip_id=trip_id).first()
+        if existing_fav:
+            return jsonify({"message": "Favorite already exists"}), 400
+        
+        row = Favorites(user_id=user_id, trip_id=trip_id)
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = 'Favorite added successfully'
+        response_body['results'] = row.serialize()
+        return response_body, 200
+    if request.method == 'DELETE':
+        row = Favorites.query.filter_by(user_id=user_id, trip_id=trip_id).first()
+        if not row:
+            return {'message': 'favorite planet not found'}, 404
+        db.session.delete(row)
+        db.session.commit()
+        response_body['message'] = 'Favorite deleted successfully'
+        response_body['results'] = row.serialize()
+        return response_body, 200
+    response_body ['message'] = 'unexpected error'
+    return response_body, 400
+
+    
 
 #https://cloudinary.com/
 #Endpoint load image
