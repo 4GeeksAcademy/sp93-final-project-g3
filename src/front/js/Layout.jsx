@@ -9,6 +9,8 @@ import { BackendURL } from "./component/BackendURL.jsx";
 // Customs Pages or Views
 import { Home } from "./pages/Home.jsx";
 import { Error404 } from './pages/Error404.jsx'
+import { Login } from "./pages/Login.jsx";
+import { Register } from "./pages/Register.jsx";
 
 
 // Create your first component
@@ -26,6 +28,8 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Error404 />} path='*' />
+                        <Route element={<Login />} path="/login/" />
+                        <Route element={<Register />} path="/register/" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>

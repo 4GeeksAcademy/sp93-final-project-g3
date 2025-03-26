@@ -1,0 +1,41 @@
+.bg-login {
+    background: url('../img/girls.jpg') center/cover no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100vh; /* Ocupa toda la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-box {
+    background-color: #FFB3A8; /* Color de fondo del formulario */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.text-primary-custom {
+    color: #5B52BC; /* Color del título */
+}
+
+.btn-submit {
+    background-color: #5B52BC; /* Color del botón */
+    color: white;
+}
+
+.btn-submit:hover {
+    background-color: #4a46a0;
+}
+
+.text-link {
+    color: #5B52BC; /* Color del texto del enlace */
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}

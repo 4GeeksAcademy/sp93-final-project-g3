@@ -12,8 +12,6 @@ from flask_jwt_extended import get_jwt
 from datetime import datetime
 import requests
 
-
-
 api = Blueprint('api', __name__)
 CORS(api)  # Allow CORS requests to this API
 
@@ -23,6 +21,7 @@ def handle_hello():
     response_body = {}
     response_body['message'] = "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
     return response_body, 200
+
 
 @api.route('/register', methods=['POST'])
 def register_user():
@@ -70,6 +69,7 @@ def login():
     response_body['results'] = user
     return response_body, 200
 
+
 @api.route('/users/<int:user_id>', methods=['GET'])
 def user_id(user_id):
    user = Users.query.get(user_id)
@@ -86,6 +86,7 @@ def users():
     response_body["message"] = f'Listado de Usuarios'
     response_body["results"] = results
     return(response_body), 200
+
 
 @api.route('/users', methods=['PUT'])
 @jwt_required()
@@ -114,7 +115,6 @@ def edit_user():
     response_body['message'] = 'User edited'
     response_body['results'] = row.serialize()
     return response_body, 200
-
 
 
 # PUT /trips/{id} → Editar un viaje (solo anfitrión del viaje)
@@ -214,7 +214,6 @@ def post_trip(user_id):
     return response_body, 200
 
 
-
 # GET /trips/{id} → Ver detalles de un viaje
 @api.route('/trips/<int:trip_id>', methods=['GET'])
 def get_trip(trip_id):
@@ -231,6 +230,7 @@ def get_trip(trip_id):
     }
     return jsonify(response_body), 200
 
+
 # GET /trips → Listar todos los viajes disponibles (para viajeros)
 @api.route('/trips', methods=['GET'])
 def get_trips():
@@ -240,6 +240,7 @@ def get_trips():
         "results": [trip.serialize() for trip in trips]
     }
     return jsonify(response_body), 200
+
 
 # DELETE /trips/{id} → Cancelar un viaje (solo anfitrión del viaje)
 @api.route('/trips/<int:trip_id>', methods=['DELETE'])
@@ -466,6 +467,7 @@ def leave_trip(trip_id):
     response_body['message'] = "Cannot leave the trip in the current state"
     return response_body, 400
 
+
 @api.route('/trips/<int:trip_id>/favorites', methods=['POST', 'DELETE'])
 @jwt_required()
 def favorites(trip_id):
@@ -485,16 +487,15 @@ def favorites(trip_id):
     if request.method == 'DELETE':
         row = Favorites.query.filter_by(user_id=user_id, trip_id=trip_id).first()
         if not row:
-            return {'message': 'favorite planet not found'}, 404
+            return {'message': 'Favorite trip not found'}, 404
         db.session.delete(row)
         db.session.commit()
-        response_body['message'] = 'Favorite deleted successfully'
+        response_body['message'] = 'Favorite trip deleted successfully'
         response_body['results'] = row.serialize()
         return response_body, 200
     response_body ['message'] = 'unexpected error'
     return response_body, 400
 
     
-
 #https://cloudinary.com/
 #Endpoint load image

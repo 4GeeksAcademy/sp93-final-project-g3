@@ -1,0 +1,61 @@
+/* Background Image */
+.form-register {
+    height: 100vh;
+    position: relative;
+}
+
+/* Registration Box */
+.register-box {
+    position: relative;
+    background-color: #FFB3A8; /* Light pink */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+/* Title */
+.register-title {
+    color: #5B52BC; /* Indigo */
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+/* Subtitle */
+.register-subtitle {
+    color: #FF5942; /* Red-Orange */
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+/* Submit Button */
+.register-btn {
+    background-color: #5B52BC !important;
+    color: white !important;
+    border: none;
+    font-size: 1rem;
+}
+.register-btn:hover {
+    background-color: #4A44A0 !important;
+}
+/* Login Link */
+.login-text {
+    color: #5B52BC; /* Indigo */
+}
+.login-link {
+    color: #5B52BC !important;
+    font-weight: bold;
+    text-decoration: none;
+}
+.login-link:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
