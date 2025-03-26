@@ -29,7 +29,10 @@ def register_user():
     data = request.json
 
 
-    row = Users(email=data['email'], password=data['password'])
+    row = Users(email=data['email'],
+                password=data['password'],
+                first_name=data.get('first_name', None),
+                last_name=data.get('last_name', None))
     db.session.add(row)
     db.session.commit()
 

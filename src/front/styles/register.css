@@ -1,7 +1,13 @@
 /* Background Image */
 .form-register {
-    height: 100vh;
-    position: relative;
+    background-image: url('../../../../sp93-final-project-g3/public/girls2.jpg') center/cover no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100vh; /* Ocupa toda la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Registration Box */
