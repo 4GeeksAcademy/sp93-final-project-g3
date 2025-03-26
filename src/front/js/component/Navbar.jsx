@@ -1,9 +1,22 @@
-import React from "react";
+import React, {useContext} from "react";
 import { Link } from "react-router-dom";
+import { Context } from "../store/appContext";
 import Vibe from "../../img/Vibe.png"
 import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
+	const { store, actions } = useContext(Context);
+	const navigate = useNavigate();
+
+	const user = JSON.parse(localStorage.getItem("user"));
+
+	const handleLog = () => {
+		if (store.isLogged) {
+			actions.logout();
+		} else {
+			navigate('/login')
+		}
+	}
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-custom">
@@ -36,8 +49,25 @@ export const Navbar = () => {
 						<button className="btn btn-outline-light me-2">
 							<i className="fas fa-heart"></i>
 						</button>
-						<Link to='/login' className=" btn btn-login me-2">Login</Link>
-						<Link to='/register' className=" btn btn-register me-2">Register</Link>
+						{store.isLogged ? (
+						<ul className="navbar-nav me-auto mb-2 mb-lg-0">
+							<li className="nav-item">
+								<span className="nav-link text-light me-3">Welcome, {store.user.first_name}</span>
+							</li>
+							<li className="nav-item">
+								<span onClick={handleLog} className="nav-link">Logout</span>
+							</li>
+						</ul>
+					) : (
+						<ul className="navbar-nav me-auto mb-2 mb-lg-0">
+							<li className="nav-item">
+								<span onClick={ () => navigate("/login")} className="btn btn-login me-2">Login</span>
+							</li>
+							<li className="nav-item">
+								<span onClick={ () => navigate("/register")} className="btn btn-register me-2">Register</span>
+							</li>
+						</ul>
+					)}
 					</div>
 				</div>
 			</div>

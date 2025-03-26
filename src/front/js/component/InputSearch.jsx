@@ -2,8 +2,8 @@ import React, {useState} from "react";
 import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
 
 const libraries = ["places"];
-const apiKey = "AIzaSyCQCup2ExRRx9ywMJjSWZmiLL5N0rdP-do";
 
+const API_KEY = process.env.GOOGLE_API_KEY;
 export const InputSearch = () => {
     const [autocomplete, setAutocomplete] = useState(null);
     const onLoad = (autoC) => setAutocomplete(autoC);
@@ -13,7 +13,7 @@ export const InputSearch = () => {
             console.log("Dirección:", place);
         }}
     return (
-    <LoadScript googleMapsApiKey={apiKey} libraries={libraries}>
+    <LoadScript googleMapsApiKey={API_KEY} libraries={libraries}>
             <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
                 <input type="text" placeholder="Buscar dirección" />
             </Autocomplete>
