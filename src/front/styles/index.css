@@ -1,3 +1,26 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+/* Navbar Background */
+.navbar-custom {
+    background-color: #5B52BC !important; /* Color 1 */
+}
+
+/* Button Styles */
+.btn-login {
+    background-color: #7E77CA !important; /* Color 3 */
+    color: white !important;
+    border: none;
+}
+
+.btn-register {
+    background-color: #FF5942 !important; /* Color 5 */
+    color: white !important;
+    border: none;
+}
+
+/* Hover Effects */
+.btn-login:hover {
+    background-color: #6D65D0 !important;
+}
+
+.btn-register:hover {
+    background-color: #FFA5A0 !important;
+}
