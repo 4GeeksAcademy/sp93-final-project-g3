@@ -1,7 +1,143 @@
-/*
-    home.css: This website contains selectors only used in home.css
+/* General Styles */
+body {
+    font-family: 'Poppins', serif;
+    background-color: #5B52BC;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
 
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
+/* Hero Section */
+.hero-section {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 30vh; /* Adjusts button placement to lower third */
+}
+
+/* Hero Button */
+.hero-section button {
+    background-color: #FF5942;
+    color: white;
+    font-size: 24px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    transition: 0.3s;
+    font-family: 'Poppins';
+}
+
+.hero-section button:hover {
+    background-color: #FFA5A0 !important;
+}
+
+/* Most Searched Destinations */
+.most-searched {
+    padding: 60px 0;
+    text-align: center;
+    font-family: 'Short Stack';
+    background-color: white;
+}
+
+.most-searched h2 {
+    color: #5B52BC;
+    margin-bottom: 40px;
+    font-family: 'Poppins';
+}
+
+.card {
+    background-color: #FFB3A8;
+    border: none;
+    color: #5B52BC;
+    font-family: 'poppins';
+}
+
+.card img {
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* How It Works Section */
+.how-it-works {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+.how-it-works-title{
+    color: #5B52BC;
+    font-family: 'poppins';
+}
+.how-it-works-description{
+    font-size: 18px;
+    color: #666;
+    font-family: "Poppins", sans-serif;
+    margin-bottom: 30px;
+}
+.how-it-works-subtitles{
+    color: #FF5942;
+    font-family: 'poppins';
+}
+.step {
+    text-align: center;
+    max-width: 200px;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background-color: #FFB3A8;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    font-family: "Poppins", sans-serif;
+}
+
+.step-title {
+    color: #5B52BC;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 5px;
+    font-family: "Poppins", sans-serif;
+}
+
+.step-subtitle {
+    font-size: 14px;
+    color: #666;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Testimonials Section */
+.testimonies{
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+.testimonial-title{
+    font-family: 'poppins';
+}
+.testimonial-text {
+    font-size: 20px;
+    font-weight: 400;
+    color: #333;
+    font-style: italic;
+    margin-bottom: 10px;
+    font-family: 'poppins';
+}
+
+.testimonial-author {
+    font-size: 18px;
+    font-weight: 600;
+    color: #FF5942;
+    font-family: 'poppins';
+}

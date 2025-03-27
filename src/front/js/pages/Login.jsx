@@ -36,7 +36,7 @@ export const Login = () => {
        
             <form className="form-box" onSubmit={handleSubmit}>
                 <h1 className="h3 mb-3 fw-bold text-center text-primary-custom">Login</h1>
-                <p className="text-center" style={{ color: "#FF5942" }}>
+                <p className="subtitle text-center" style={{ color: "#FF5942" }}>
                     Discover your next adventure
                 </p>
 
@@ -59,7 +59,7 @@ export const Login = () => {
                 <button className="btn btn-submit w-100 py-2 p-4" type="submit">Log in</button>
 
                 <div className="text-center mt-3">
-                    <span className="text-primary-custom">You already have an account? </span>
+                    <span className="text-primary-custom">You don't have an account? </span>
                     <a onClick={() => navigate("/register")} href="#" className="text-link">Register</a>
                 </div>
             </form>

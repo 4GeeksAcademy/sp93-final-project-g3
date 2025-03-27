@@ -26,12 +26,14 @@
     text-align: center;
     font-size: 2rem;
     font-weight: bold;
+    font-family: 'poppins';
 }
 /* Subtitle */
 .register-subtitle {
     color: #FF5942; /* Red-Orange */
     text-align: center;
     font-size: 1.2rem;
+    font-family: 'poppins';
     margin-bottom: 1rem;
 }
 /* Submit Button */

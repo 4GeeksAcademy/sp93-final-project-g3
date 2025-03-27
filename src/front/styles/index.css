@@ -24,3 +24,12 @@
 .btn-register:hover {
     background-color: #FFA5A0 !important;
 }
+
+/* Fonts */
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+}
+
+p {
+    font-family: 'Merriweather', serif;
+}
