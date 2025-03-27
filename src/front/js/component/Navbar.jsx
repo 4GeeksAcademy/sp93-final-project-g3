@@ -21,9 +21,9 @@ export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-expand-lg navbar-custom">
 			<div className="container">
-				<a className="navbar-brand">
+				<span className="btn navbar-brand" OnClick={ () => navigate("/")}>
 					<img src={Vibe} alt="Logo" width="120" height="60"/> 
-				</a>
+				</span>
 
 				<button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
 					<span className="navbar-toggler-icon"></span>
@@ -35,10 +35,10 @@ export const Navbar = () => {
 							<a className="nav-link text-white" href="#">Explore Adventures</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link text-white" href="#">Find Your Next Adventure</a>
+							<a onClick={ () => navigate("/find")} className="nav-link text-white" href="#">Find Your Next Adventure</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link text-white" href="#">Design Your Trip</a>
+							<a onClick={ () => navigate("/design-trip")} className="nav-link text-white" href="#">Design Your Trip</a>
 						</li>
 						<li className="nav-item">
 							<a className="nav-link text-white" href="#">Community</a>

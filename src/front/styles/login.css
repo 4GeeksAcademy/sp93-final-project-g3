@@ -19,9 +19,13 @@
 }
 
 .text-primary-custom {
+    font-family: 'poppins';
     color: #5B52BC; /* Color del título */
 }
-
+.subtitle{
+    font-family: 'poppins';
+    color: #FF5942 
+}
 .btn-submit {
     background-color: #5B52BC; /* Color del botón */
     color: white;
@@ -29,11 +33,13 @@
 
 .btn-submit:hover {
     background-color: #4a46a0;
+    color: white;
 }
 
 .text-link {
     color: #5B52BC; /* Color del texto del enlace */
     text-decoration: none;
+    font-weight: 700;
 }
 
 .text-link:hover {

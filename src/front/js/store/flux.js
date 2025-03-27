@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			user: {},
 			isLogged: false,
 			isAdmin: false,
+			searchResults: []
 		},
 		actions: {
 			setUser: (newUser) => {setStore({ user: newUser})},
@@ -95,8 +96,33 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				}
 				const data = await response.json()
 				setStore({ message: data.message })
+			},
+			createTrip: async (tripData) => {
+				const store = getStore();
+				const host_id = store.user.id;
+				const uri = `${process.env.BACKEND_URL}/api/user/${host_id}/trips`;
+				const token = localStorage.getItem("token");
+				const options = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer" + token
+					},
+					body: JSON.stringify(tripData)
+				};
+				const response = await fetch(uri, options);
+				if (!response.ok) {
+					console.log("Error creating trip:", response);
+					return
+				}
+				const data = await response.json();
+				setStore: ({
+					user: {},
+					trips: []
+				})
+				console.log("Trip successfully created", getStore().Trips)
+				return data
 			}
-			
 		}
 	};
 };
