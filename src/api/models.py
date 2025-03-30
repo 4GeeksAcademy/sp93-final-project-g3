@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime,date
 
 
 db = SQLAlchemy()
@@ -12,31 +12,41 @@ class Users(db.Model):
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     gender = db.Column(db.Enum("male", "female", "non_binary", "other", name='gender'))
-    age = db.Column(db.Integer)
+    date_of_birth = db.Column(db.Date)  
     photo = db.Column(db.String(300))  
     biography = db.Column(db.String(500)) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     is_active = db.Column(db.Boolean(), nullable=False, default=True)
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
 
- 
-   
     def __repr__(self):
         return f'<User {self.id} - {self.email}>'
 
     def serialize(self):
-        return {'id': self.id,
+        return {
+            'id': self.id,
             'email': self.email,
             'first_name': self.first_name,
             'last_name': self.last_name,
             'gender': self.gender,
-            'age': self.age,
+            'age': self.calculate_age(),  
+            'date_of_birth': self.date_of_birth.isoformat() if self.date_of_birth else None,
             'photo': self.photo,
             'biography': self.biography,
             'created_at': self.created_at.strftime("%d %m %y"),
             'is_active': self.is_active,
-            'is_admin': self.is_admin}
-
+            'is_admin': self.is_admin
+        }
+    
+    def calculate_age(self):
+        if not self.date_of_birth:
+            return None
+        today = date.today()
+        age = today.year - self.date_of_birth.year
+        if (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day):
+            age -= 1
+        return age
+    
 
 class Trips(db.Model):
     id = db.Column(db.Integer, primary_key=True)
