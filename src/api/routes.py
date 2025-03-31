@@ -236,7 +236,7 @@ def update_trip(trip_id):
 # POST /trips → Crear un viaje (solo anfitriones)
 @api.route('/trips', methods=['POST'])
 @jwt_required()
-def post_trip(user_id):
+def post_trip():
     response_body = {}
    
     data = request.json
@@ -253,8 +253,7 @@ def post_trip(user_id):
         age_min=data.get('age_min'),  
         age_max=data.get('age_max'), 
         status=data['status'],
-        host_id = user_id
-        
+        host_id = user_id   
     )
 
     db.session.add(row)
