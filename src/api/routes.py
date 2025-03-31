@@ -28,14 +28,16 @@ def register_user():
     response_body = {}
     data = request.json
 
-    #VALIDAR
-    email = data['email'].lower() if data['email'] else None
-    password = data['password'] if data['password'] else None
+    email = data.get('email', '').strip().lower()  
+    password = data.get('password', '').strip()
 
+    # Validacion
+    if not email or not password:
+        return {"message": "El email y la contraseña son obligatorios"}, 400
 
-    if email or password :
-        response_body ['message'] = "Necesitas un usuario y una contrasena legitima"
-        return response_body,409
+    # Verificar si el email ya esta registrado
+    if Users.query.filter_by(email=email).first():
+        return {"message": "El email ya está registrado"}, 409
     
 
     row = Users(email=email,
