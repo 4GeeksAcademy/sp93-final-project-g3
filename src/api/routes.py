@@ -28,16 +28,26 @@ def register_user():
     response_body = {}
     data = request.json
 
+    #VALIDAR
+    email = data['email'].lower() if data['email'] else None
+    password = data['password'] if data['password'] else None
 
-    row = Users(email=data['email'],
-                password=data['password'],
+
+    if email or password :
+        response_body ['message'] = "Necesitas un usuario y una contrasena legitima"
+        return response_body,409
+    
+
+    row = Users(email=email,
+                password=password,
                 first_name=data.get('first_name', None),
                 last_name=data.get('last_name', None))
     db.session.add(row)
     db.session.commit()
 
     user = row.serialize()
-    claims = {'user_id': user['id']}
+    claims = {'user_id': user['id'],
+              'is_admin': user['is_admin']}
 
     print(claims)
 
@@ -74,9 +84,16 @@ def login():
 
 
 @api.route('/users/<int:user_id>', methods=['GET'])
+@jwt_required()  
 def user_id(user_id):
    user = Users.query.get(user_id)
-   response_body = { "message": "user successfully retrieved", "results": user.serialize()}
+   if not user:
+       return jsonify({"message": "User not found"}), 404
+   
+   response_body = { 
+       "message": "user successfully retrieved", 
+       "results": user.serialize()
+   }
    return jsonify(response_body), 200
    
 
@@ -84,11 +101,10 @@ def user_id(user_id):
 def users():
     response_body = { }
     rows = db.session.execute(db.select(Users)).scalars() 
- 
     results = [ row.serialize() for row in rows ]
     response_body["message"] = f'Listado de Usuarios'
     response_body["results"] = results
-    return(response_body), 200
+    return response_body, 200
 
 
 @api.route('/users', methods=['PUT'])
@@ -97,28 +113,61 @@ def edit_user():
     response_body = {}
     data = request.json
     user_id = get_jwt()['user_id']
-    print("soy el data de edit user", data)
-    print("soy el userid de edit", user_id)
-    row = Users.query.get(user_id)
-    print("soy el print de row serialize", row.serialize())
-    if not row:
+    
+    user = Users.query.get(user_id)
+    if not user:
         response_body['message'] = 'User not found'
         return response_body, 404
-    row.first_name = data.get('first_name', row.first_name)  # Use .get() to avoid KeyError
-    row.last_name = data.get('last_name', row.last_name)
-    row.email = data.get('email', row.email)
-    row.password = data.get('password', row.password)
-    row.gender = data.get('gender', row.gender)
-    row.age = data.get('age', row.age)
-    row.photo = data.get('photo', row.photo)
-    row.biography = data.get('biography', row.biography)
-    row.is_admin = data.get('is_admin', row.is_admin)
+
+    user.first_name = data.get('first_name', user.first_name)
+    user.last_name = data.get('last_name', user.last_name)
+    user.email = data.get('email', user.email)
+    user.gender = data.get('gender', user.gender)
+    user.photo = data.get('photo', user.photo)
+    user.biography = data.get('biography', user.biography)
+
+   
+    if 'date_of_birth' in data and user.date_of_birth is None:
+        try:
+            user.date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date()
+        except ValueError:
+            response_body['message'] = 'Formato de fecha inválido. Use YYYY-MM-DD'
+            return response_body, 400
+
+    # Validación de email único
+    if 'email' in data and data['email'] != user.email:
+        if Users.query.filter_by(email=data['email']).first():
+            response_body['message'] = 'Email ya está en uso'
+            return response_body, 400
 
     db.session.commit()
-    response_body['message'] = 'User edited'
-    response_body['results'] = row.serialize()
+    response_body['message'] = 'User edited successfully'
+    response_body['results'] = user.serialize()
     return response_body, 200
 
+@api.route('/users/password', methods=['PUT'])
+@jwt_required()
+def update_password():
+    response_body = {}
+    data = request.json
+    user_id = get_jwt()['user_id']
+    
+    user = Users.query.get(user_id)
+    if not user:
+        response_body['message'] = 'Usuario no encontrado'
+        return response_body, 404
+    
+    
+    if 'new_password' not in data or len(data['new_password']) < 6:
+        response_body['message'] = 'Contraseña inválida (mínimo 6 caracteres)'
+        return response_body, 400
+    
+   
+    user.password = data['new_password']
+    db.session.commit()
+    
+    response_body['message'] = 'Contraseña actualizada'
+    return response_body, 200
 
 # PUT /trips/{id} → Editar un viaje (solo anfitrión del viaje)
 @api.route('/trips/<int:trip_id>', methods=['PUT'])
@@ -183,14 +232,13 @@ def update_trip(trip_id):
 
 
 # POST /trips → Crear un viaje (solo anfitriones)
-@api.route('/user/<int:user_id>/trips', methods=['POST'])
+@api.route('/trips', methods=['POST'])
 @jwt_required()
 def post_trip(user_id):
     response_body = {}
    
     data = request.json
     user_id = get_jwt()['user_id']
-
     row = Trips(
         destination=data['destination'],
         start_date=datetime.strptime(data['start_date'], "%Y-%m-%d"),
@@ -210,7 +258,6 @@ def post_trip(user_id):
     db.session.add(row)
     db.session.commit()  
     trip = row.serialize()
-    claims = {'trip_id': trip['id']}
     response_body["message"] = "request created"
     response_body["results"] = trip
 
@@ -299,10 +346,12 @@ def join_trip(trip_id):
         return response_body, 404
     
     if trip.host_id == user_id:
-        response_body['message'] = "Host cannot join their own trip as a traveler"  
+        response_body['message'] = "Host cannot join their own trip as a traveler" 
+        return response_body, 407 
 
     if trip.status == 'cancelled':
         response_body['message'] = "Cannot join a cancelled trip"
+        return response_body, 408
         
     existing_traveler = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
     if existing_traveler:
@@ -455,6 +504,8 @@ def leave_trip(trip_id):
         response_body['message'] = "You are not a traveler in this trip"
         return response_body, 404
     
+    # Porque en uno lo borro y el otro lo cancelo en pedding y en approved"cancelled"
+
     if traveler_request.authorization == 'pending':
         db.session.delete(traveler_request)
         db.session.commit()
@@ -494,10 +545,8 @@ def favorites(trip_id):
         db.session.delete(row)
         db.session.commit()
         response_body['message'] = 'Favorite trip deleted successfully'
-        response_body['results'] = row.serialize()
         return response_body, 200
-    response_body ['message'] = 'unexpected error'
-    return response_body, 400
+
 
     
 #https://cloudinary.com/
