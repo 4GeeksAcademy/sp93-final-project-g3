@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 4888e55c82d0
+Revision ID: 09f9af0cb681
 Revises: 
-Create Date: 2025-03-24 19:59:23.612708
+Create Date: 2025-03-31 16:48:16.840414
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4888e55c82d0'
+revision = '09f9af0cb681'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,7 +25,7 @@ def upgrade():
     sa.Column('first_name', sa.String(length=50), nullable=True),
     sa.Column('last_name', sa.String(length=50), nullable=True),
     sa.Column('gender', sa.Enum('male', 'female', 'non_binary', 'other', name='gender'), nullable=True),
-    sa.Column('age', sa.Integer(), nullable=True),
+    sa.Column('date_of_birth', sa.Date(), nullable=True),
     sa.Column('photo', sa.String(length=300), nullable=True),
     sa.Column('biography', sa.String(length=500), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
@@ -70,7 +70,7 @@ def upgrade():
     )
     op.create_table('travelers',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('authorization', sa.Enum('approved', 'declined', 'pending', 'cancelled', name='authorization'), nullable=True),
+    sa.Column('authorization', sa.Enum('approved', 'declined', 'pending', 'cancelled', 'removed', name='authorization'), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('trip_id', sa.Integer(), nullable=False),
     sa.Column('traveler_id', sa.Integer(), nullable=False),
