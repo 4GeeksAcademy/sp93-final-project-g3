@@ -12,7 +12,7 @@ export const Navbar = () => {
 
 	const handleLog = () => {
 		if (store.isLogged) {
-			actions.logout();
+			actions.logout(navigate('/'));
 		} else {
 			navigate('/login')
 		}
@@ -52,7 +52,7 @@ export const Navbar = () => {
 						{store.isLogged ? (
 							<ul className="navbar-nav me-auto mb-2 mb-lg-0">
 								<li className="nav-item">
-									<span className="nav-link text-light me-3">Welcome, {store.user.first_name}</span>
+									<span onClick={() => navigate("/profile")}className="nav-link text-light me-3">Welcome, {store.user.first_name}</span>
 								</li>
 								<li className="nav-item">
 									<span onClick={handleLog} className="nav-link">Logout</span>
