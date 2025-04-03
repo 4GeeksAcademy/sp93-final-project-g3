@@ -88,6 +88,51 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				localStorage.setItem('user', JSON.stringify(data.results))
 				console.log("I'm registered", getStore().isLogged)
 			},
+			editProfile: async (profileData) => {
+				const uri = `${process.env.BACKEND_URL}/api/users`;
+				const token = localStorage.getItem('token');
+				const options = {
+					method: 'PUT',
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${token}`
+					},
+					body: JSON.stringify(profileData)
+				};
+				
+				try {
+					const response = await fetch(uri, options);
+					const data = await response.json(); // Mover esto antes de verificar response.ok
+					
+					console.log("Response data:", data); // Agregar log para depuración
+					
+					if (!response.ok) {
+						console.error("Error details:", {
+							status: response.status,
+							statusText: response.statusText,
+							errorData: data
+						});
+						throw new Error(data.message || 'Failed to update profile');
+					}
+					
+					const updatedUser = data.results;
+					
+					// Update store and local storage
+					setStore({
+						user: updatedUser
+					});
+					localStorage.setItem('user', JSON.stringify(updatedUser));
+					
+					return true;
+				} catch (error) {
+					console.error('Error updating profile:', {
+						error: error,
+						profileData: profileData,
+						token: token
+					});
+					throw error;
+				}
+			},
 			getMessage: async () => {
 				const uri = `${process.env.BACKEND_URL}/api/hello`
 				const response = await fetch(uri)
