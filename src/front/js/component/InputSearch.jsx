@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
+import { LoadScript, Autocomplete } from "@react-google-maps/api";
 
 const libraries = ["places"];
 const API_KEY = process.env.GOOGLE_API_KEY;
 
-export const InputSearch = () => {
+export const InputSearch = ({ onPlaceSelected }) => {  
     const [autocomplete, setAutocomplete] = useState(null);
 
     const onLoad = (autoC) => setAutocomplete(autoC);
+
     const onPlaceChanged = () => {
         if (autocomplete) {
             const place = autocomplete.getPlace();
-            console.log("Dirección:", place);
+            if (place && place.formatted_address) {
+                onPlaceSelected(place); 
+            }
         }
     };
 

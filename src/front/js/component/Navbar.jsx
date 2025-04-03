@@ -32,7 +32,7 @@ export const Navbar = () => {
 				<div className="collapse navbar-collapse " id="navbarNav">
 					<ul className="navbar-nav me-auto">
 						<li className="nav-item">
-							<a className="nav-link text-white" href="#">Explore Adventures</a>
+							<a onClick={() => navigate("/get-inspired")} className="nav-link text-white" href="#">Get Inspired</a>
 						</li>
 						<li className="nav-item">
 							<a onClick={() => navigate("/find")} className="nav-link text-white" href="#">Find Your Next Adventure</a>

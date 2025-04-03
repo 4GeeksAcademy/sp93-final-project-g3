@@ -30,8 +30,17 @@ export const Find = () => {
   };
 
   const handleSearch = () => {
-    actions.updateSearchCriteria({ startDate, endDate });
-    actions.performSearch();
+    const params = new URLSearchParams({
+      destination: store.searchCriteria.destination || "",
+      start_date: startDate || "",
+      end_date: endDate || "",
+      min_age: localFilters.minAge || "",
+      max_age: localFilters.maxAge || "",
+      budget: localFilters.budget || "",
+      sort_by_price: localFilters.sortByPrice || "",
+    });
+  
+    actions.performSearch(params.toString());
   };
 
   const handleLocalFilterChange = (filterName, value) => {
