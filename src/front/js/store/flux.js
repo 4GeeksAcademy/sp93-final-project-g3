@@ -13,7 +13,8 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				startDate: "",
 				endDate: "",
 				filters: {}
-			}
+			},
+			favorites: []
 		},
 		actions: {
 			setUser: (newUser) => { setStore({ user: newUser }) },
@@ -106,13 +107,13 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					},
 					body: JSON.stringify(profileData)
 				};
-				
+
 				try {
 					const response = await fetch(uri, options);
 					const data = await response.json(); // Mover esto antes de verificar response.ok
-					
+
 					console.log("Response data:", data); // Agregar log para depuración
-					
+
 					if (!response.ok) {
 						console.error("Error details:", {
 							status: response.status,
@@ -121,15 +122,15 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 						});
 						throw new Error(data.message || 'Failed to update profile');
 					}
-					
+
 					const updatedUser = data.results;
-					
+
 					// Update store and local storage
 					setStore({
 						user: updatedUser
 					});
 					localStorage.setItem('user', JSON.stringify(updatedUser));
-					
+
 					return true;
 				} catch (error) {
 					console.error('Error updating profile:', {
@@ -202,147 +203,70 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					console.error("Error fetching finished trips:", error);
 				}
 			},
-			// Perform search & handle pagination
-			performSearchFinishedTrips: async (page = 1) => {
-				try {
-				  const resp = await fetch(`${process.env.BACKEND_URL}/api/trips/finished?page=${page}`, {
+			getFavoriteTrips: async () => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/favorites`;
+				const token = localStorage.getItem("token");
+				const options = {
 					method: "GET",
 					headers: {
-					  "Content-Type": "application/json",
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
 					},
-				  });
-			  
-				  if (!resp.ok) {
-					console.error("Error response:", await resp.text());
-					throw new Error(`Failed to fetch finished trips: ${resp.status}`);
-				  }
-			  
-				  const data = await resp.json();
-				  console.log("Finished trips data:", data); // Log full response
-				  
-				  if (!data.results || !Array.isArray(data.results)) {
-					console.error("Invalid data format returned:", data);
-					throw new Error("Invalid data format returned from API");
-				  }
-				  
-				  setStore({ 
-					searchResults: data.results, 
-					totalPages: data.total_pages || 1, 
-					currentPage: data.current_page || page 
-				  });
-				  
-				  return true;
-				} catch (error) {
-				  console.error("Error fetching finished trips:", error);
-				  return false;
+				};
+				const response = await fetch(uri, options);
+				console.log("get favorites:", response)
+				if (!response.ok) {
+					console.log("error getting favs trips:", response);
+					return
 				}
-			  },
-
-			// Verificar si un viaje está en favoritos
-			checkIfFavorite: async (tripId) => {
-				try {
-					const token = localStorage.getItem("token");
-					if (!token) return false;
-
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/check/${tripId}`, {
-						method: "GET",
-						headers: {
-							"Authorization": "Bearer " + token
-						}
-					});
-
-					if (!resp.ok) return false;
-					const data = await resp.json();
-					return data.is_favorite;
-				} catch (error) {
-					console.error("Error checking favorite status:", error);
-					return false;
-				}
+				const data = await response.json();
+				setStore({ favorites: data.results })
+				console.log("data de get favs:", data);
 			},
-
-			// Quitar un viaje de favoritos
-			removeFavorite: async (tripId) => {
-				try {
-					const token = localStorage.getItem("token");
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/trips/${tripId}/favorites`, {
-						method: "DELETE",
-						headers: {
-							"Content-Type": "application/json",
-							"Authorization": "Bearer " + token
-						}
-					});
-
-					if (!resp.ok) throw new Error("Failed to remove favorite");
-					console.log("Trip removed from favorites:", tripId);
-					return true;
-				} catch (error) {
-					console.error("Error removing favorite:", error);
-					return false;
-				}
-			},
-
-			// Toggle favorito mejorado (añadir o quitar según el estado actual)
 			toggleFavorite: async (tripId) => {
 				try {
-					const store = getStore();
-					const token = localStorage.getItem("token");
-
-					// Primero comprobamos si ya es favorito
-					const isFavorite = await getActions().checkIfFavorite(tripId);
-
-					// Según el resultado, añadimos o quitamos
-					const method = isFavorite ? "DELETE" : "POST";
-
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/trips/${tripId}/favorites`, {
-						method: method,
-						headers: {
-							"Content-Type": "application/json",
-							"Authorization": "Bearer " + token
-						}
-					});
-
-					if (!resp.ok) throw new Error(`Failed to ${isFavorite ? 'remove' : 'add'} favorite`);
-					console.log(`Trip ${isFavorite ? 'removed from' : 'added to'} favorites:`, tripId);
-
-					// Actualizamos la lista de favoritos en el store si es necesario
-					if (store.favoriteTrips) {
-						if (isFavorite) {
-							setStore({
-								favoriteTrips: store.favoriteTrips.filter(trip => trip.id !== tripId)
-							});
-						} else {
-							// Aquí podrías hacer un fetch al trip para añadirlo a favoritos
-							// O simplemente recargar la lista completa
-						}
+				  const store = getStore();
+				  const token = localStorage.getItem("token");
+				  if (!token) throw new Error("No token found");
+			  
+				  const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/favorites`;
+				  // If the trip is already in favorites, we want to remove it (DELETE); otherwise, add it (POST).
+				  const isFavorite = store.favorites.some(fav => fav.trip_id === tripId);
+				  const method = isFavorite ? "DELETE" : "POST";
+				  
+				  console.log("Toggling favorite for trip:", tripId, "Method:", method);
+			  
+				  const options = {
+					method: method,
+					headers: {
+					  "Content-Type": "application/json",
+					  "Authorization": "Bearer " + token
 					}
-
-					return true;
+				  };
+			  
+				  const response = await fetch(uri, options);
+				  if (!response.ok) {
+					const errorText = await response.text();
+					throw new Error(`Error ${response.status}: ${errorText}`);
+				  }
+				  const data = await response.json();
+			  
+				  if (isFavorite) {
+					// If it was already a favorite, remove it from the store
+					setStore({ favorites: store.favorites.filter(fav => fav.trip_id !== tripId) });
+					console.log("Trip removed from favorites:", tripId);
+				  } else {
+					// If not a favorite, add it to the store (assume backend returns the new favorite under data.results)
+					setStore({ favorites: [...store.favorites, data.results] });
+					console.log("Trip added to favorites:", tripId);
+				  }
+				  return true;
 				} catch (error) {
-					console.error("Error toggling favorite:", error);
-					return false;
+				  console.error("Error toggling favorite:", error);
+				  return false;
 				}
-			},
-
-			// Obtener todos los favoritos del usuario
-			getFavoriteTrips: async () => {
-				try {
-					const token = localStorage.getItem("token");
-					if (!token) return;
-
-					const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
-						headers: {
-							"Authorization": "Bearer " + token
-						}
-					});
-
-					if (!resp.ok) throw new Error("Failed to fetch favorites");
-					const data = await resp.json();
-					setStore({ favoriteTrips: data.results });
-					console.log("Favorite trips loaded:", data.results);
-				} catch (error) {
-					console.error("Error fetching favorites:", error);
-				}
-			}
+			  }
 		}
 	};
 };

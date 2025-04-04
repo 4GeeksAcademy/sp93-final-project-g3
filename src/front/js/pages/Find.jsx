@@ -52,9 +52,11 @@ export const Find = () => {
     actions.performSearch();
   };
 
-  const handlePagination = (newPage) => {
-    setPage(newPage);
+  const handlePagination = (page) => {
+    getFinishedTrips(page); // Load the trips for the selected page
+    window.scrollTo(0, 0); // Scroll back to top when changing pages
   };
+
 
   return (
     <div className="find-trips-container">
@@ -140,14 +142,38 @@ export const Find = () => {
         ))}
       </div>
 
-      <div className="pagination">
-        <button className="btn pagination-btn" onClick={() => handlePagination(page - 1)} disabled={page === 1}>
-          Previous
-        </button>
-        <button className="btn pagination-btn" onClick={() => handlePagination(page + 1)}>
-          Next
-        </button>
-      </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination-container">
+          <button
+            className="pagination-btn"
+            disabled={currentPage <= 1}
+            onClick={() => handlePagination(currentPage - 1)}
+          >
+            &laquo; Previous
+          </button>
+          
+          <div className="page-numbers">
+            {[...Array(totalPages).keys()].map((num) => (
+              <button
+                key={num + 1}
+                className={`page-number ${currentPage === num + 1 ? "active" : ""}`}
+                onClick={() => handlePagination(num + 1)}
+              >
+                {num + 1}
+              </button>
+            ))}
+          </div>
+          
+          <button
+            className="pagination-btn"
+            disabled={currentPage >= totalPages}
+            onClick={() => handlePagination(currentPage + 1)}
+          >
+            Next &raquo;
+          </button>
+        </div>
+      )}
     </div>
   );
 };
