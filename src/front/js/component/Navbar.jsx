@@ -52,7 +52,7 @@ export const Navbar = () => {
 							</span>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link text-white" href="#">Community</a>
+							<a onClick={() => navigate("/community")} className="nav-link text-white" href="#">Community</a>
 						</li>
 					</ul>
 

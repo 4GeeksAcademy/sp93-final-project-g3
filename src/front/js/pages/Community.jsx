@@ -3,17 +3,17 @@ import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
 import "../../styles/getInspired.css";
 
-export const GetInspired = () => {
+export const Community = () => {
   const { store, actions } = useContext(Context);
-  const { finishedTrips, totalPages, currentPage, favorites } = store;
-  const { getFinishedTrips } = actions;
+  const { totalPages, currentPage, users } = store;
+  const { getUsers } = actions;
 
   useEffect(() => {
-    getFinishedTrips(1); // Default to page 1
-  }, [getFinishedTrips]);
+    getUsers(1); // Default to page 1
+  }, [getUsers]);
 
   const handlePagination = (page) => {
-    getFinishedTrips(page); // Load the trips for the selected page
+    getUsers(page); // Load the trips for the selected page
     window.scrollTo(0, 0); // Scroll back to top when changing pages
   };
 
@@ -45,24 +45,23 @@ export const GetInspired = () => {
 
   return (
     <div className="trips-container">
-      <h2 className="page-title">Get Inspired</h2>
+      <h2 className="page-title">Community</h2>
       <p className="page-description">
-        Look at all the places our travelers have been, the hotels they have stayed at,
-        and the things they have seen, and get inspired to create your new adventure
+        Look at all the people that enjoy travelling as much as you do! Reach out to them and start a converstation or look at their trips and join them in their next adventure.
       </p>
 
-      {!finishedTrips || finishedTrips.length === 0 ? (
+      {!users || users.length === 0 ? (
         <div className="no-trips-message">
-          <p>No finished trips found. Check back later for inspiration!</p>
+          <p>It seems that noone has join our community yet. Please check it again later.</p>
         </div>
       ) : (
         <div className="trip-cards-container">
-          {finishedTrips.map((trip, index) => (
+          {users.map((user, index) => (
             <div key={index} className="trip-card">
               <div className="trip-card-image">
                 <img
-                  src={trip.photo || trip.imageUrl || "https://placehold.co/600x400?text=No+Image"}
-                  alt={trip.destination || "Trip"}
+                  src={user.photo || user.imageUrl || "https://placehold.co/600x400?text=No+Image"}
+                  alt={user.face || "Profile"}
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = "https://placehold.co/600x400?text=No+Image";
@@ -71,7 +70,7 @@ export const GetInspired = () => {
               </div>
               <div className="trip-card-content">
               
-                {store.favorites.find(fav => fav.id === trip.id) ? (
+                {/* {store.favorites.find(fav => fav.id === trip.id) ? (
                   <button
                     className="favorite-btn favorite-btnliked"
                     onClick={() => { actions.removeFavorite(trip.id) }}
@@ -86,26 +85,26 @@ export const GetInspired = () => {
                     title="Add to favorites"
                   >
                     <i className="fas fa-heart"></i>
-                  </button>
-                )}
-                <h3 className="trip-destination">{trip.destination || "Unknown Destination"}</h3>
+                  </button> */}
+                
+                <h3 className="trip-destination">{user.first_name|| "Unknown Name"} {user.last_name|| "Unknown Name"}</h3>
                 <div className="trip-details">
                   <p className="trip-dates">
-                    {formatDate(trip.start_date || trip.startDate)} - {formatDate(trip.end_date || trip.endDate)}
+                   Age: {user.age || "Unknown age"}
                   </p>
                   <p className="trip-budget">
-                    Budget: {trip.budget || "N/A"} {trip.budget_currency || ""}
+                    Gender: {user.gender || "N/A"}
                   </p>
-                  {trip.description && (
+                  {user.biography && (
                     <p className="trip-description">
-                      {trip.description.length > 100
-                        ? `${trip.description.substring(0, 100)}...`
-                        : trip.description}
+                      {user.biography.length > 100
+                        ? `${user.biography.substring(0, 100)}...`
+                        : user.biography}
                     </p>
                   )}
                 </div>
-                <Link to={`/trips/${trip.id}`} className="view-more-btn">
-                  View Details <i className="fas fa-arrow-right"></i>
+                <Link to={`/user/${user.id}`} className="view-more-btn">
+                  View Profile <i className="fas fa-arrow-right"></i>
                 </Link>
               </div>
             </div>

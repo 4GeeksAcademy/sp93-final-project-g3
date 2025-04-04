@@ -17,6 +17,7 @@ import { EditProfile } from "./pages/EditProfile.jsx";
 import { Profile } from "./pages/Profile.jsx";
 import { GetInspired } from "./pages/GetInspired.jsx";
 import { TripPage } from "./pages/TripPage.jsx";
+import { Community } from "./pages/Community.jsx";
 
 // Create your first component
 const Layout = () => {
@@ -41,6 +42,7 @@ const Layout = () => {
                         <Route element={<DesignTrip />} path="/design-trip/" />
                         <Route element={<GetInspired />} path="/get-inspired/" />
                         <Route element={<TripPage />} path="/trip-page/:tripId" />
+                        <Route element={<Community />} path="/community/" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
