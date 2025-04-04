@@ -70,6 +70,7 @@ class Trips(db.Model):
     def serialize(self):
         return {'id': self.id,
             'host_id': self.host_id,
+            'host': self.host_to.serialize(),
             'destination': self.destination,
             'start_date': self.start_date.strftime("%d %m %y"),
             'end_date': self.end_date.strftime("%d %m %y"),
@@ -80,6 +81,7 @@ class Trips(db.Model):
             'budget_currency': self.budget_currency,
             'age_min': self.age_min,
             'age_max': self.age_max,
+            'travelers':[row.serialize() for row in self.traveler_to if row.authorization == "approved"],
             'status': self.status}
 
 

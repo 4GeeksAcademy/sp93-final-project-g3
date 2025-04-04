@@ -5,7 +5,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			user: {},
 			isLogged: false,
 			isAdmin: false,
-			trips: [],
+			trips: {},
 			finishedTrips: [],
 			searchResults: [],
 			searchCriteria: {
@@ -14,9 +14,13 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				endDate: "",
 				filters: {}
 			},
-			favorites: []
+			favorites: {},
+			selectedTrip: {}
 		},
 		actions: {
+			setUser: (newUser) => { setStore({ user: newUser }) },
+			setIsLogged: (value) => { setStore({ isLogged: value }) },
+			setIsAdmin: (value) => { setStore({ isAdmin: value }) },
 			setUser: (newUser) => { setStore({ user: newUser }) },
 			setIsLogged: (value) => { setStore({ isLogged: value }) },
 			setIsAdmin: (value) => { setStore({ isAdmin: value }) },
@@ -31,7 +35,9 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					body: JSON.stringify(dataToSend)
 				};
 				const response = await fetch(uri, options)
+				const response = await fetch(uri, options)
 				console.log("login response", response)
+				if (!response.ok) {
 				if (!response.ok) {
 					console.log('Error login:', response.status, response.statusText)
 					return
@@ -80,7 +86,9 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					body: JSON.stringify(dataToSend)
 				};
 				const response = await fetch(uri, options)
+				const response = await fetch(uri, options)
 				console.log("register response", response)
+				if (!response.ok) {
 				if (!response.ok) {
 					console.log('Error registering:', response.status, response.statusText)
 					return
@@ -171,12 +179,55 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					return
 				}
 				const data = await response.json();
-				setStore: ({
-					user: {},
-					trips: []
-				})
-				console.log("Trip successfully created", getStore().Trips)
+				console.log(data)
+				setStore({ trips: data.results });
+
+				console.log("Trip successfully created", getStore().trips)
 				return data
+			},
+			getTrip: async (tripId) => {
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}`;
+				const token = localStorage.getItem("token");
+				const options = {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+
+				};
+				const response = await fetch(uri, options);
+				console.log("getTrip response:", response);
+
+				if (!response.ok) {
+					console.log(`Error getting trip ${tripId}:`, response);
+					setStore({ trips: null });
+					return;
+				}
+
+				const data = await response.json();
+				console.log("Data received from API:", data);
+
+				if (data && data.results) {
+					setStore({ trips: data.results });
+					console.log("Store updated with:", getStore().trips);
+				} else {
+					console.log("Unexpected data format:", data);
+				}
+			},
+			// setSelectedTrip: (tripId) => {
+			// 	fetch(`${process.env.BACKEND_URL}/api/trips/${tripId}`)
+			// 		.then(response => response.json())
+			// 		.then(data => {
+			// 			if (data.result) {
+			// 				setStore({ selectedTrip: data.result.properties });
+			// 			} else {
+			// 				console.error("Invalid response from API", data);
+			// 			}
+			// 		}).catch(error => console.error("Error fetching details:", error));
+			// },
+		}
+	}
 			},
 			searchTrips: async () => {
 				const store = getStore();

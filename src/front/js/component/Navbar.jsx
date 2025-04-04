@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import Vibe from "../../img/Vibe.png"
 import { useNavigate } from "react-router-dom";
+import '../../styles/navBar.css';
 
 export const Navbar = () => {
 	const { store, actions } = useContext(Context);
@@ -17,6 +18,8 @@ export const Navbar = () => {
 			navigate('/login')
 		}
 	}
+
+	
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-custom">
@@ -35,10 +38,18 @@ export const Navbar = () => {
 							<a onClick={() => navigate("/get-inspired")} className="nav-link text-white" href="#">Get Inspired</a>
 						</li>
 						<li className="nav-item">
-							<a onClick={() => navigate("/find")} className="nav-link text-white" href="#">Find Your Next Adventure</a>
+							<span
+								onClick={() => navigate("/find")}
+								className="nav-link text-white clickable">
+								Find Your Next Adventure
+							</span>
 						</li>
 						<li className="nav-item">
-							<a onClick={() => navigate("/design-trip")} className="nav-link text-white" href="#">Design Your Trip</a>
+							<span
+								onClick={() => navigate("/design-trip")}
+								className="nav-link text-white clickable">
+								Design Your Trip
+							</span>
 						</li>
 						<li className="nav-item">
 							<a className="nav-link text-white" href="#">Community</a>
@@ -55,7 +66,11 @@ export const Navbar = () => {
 									<span onClick={() => navigate("/profile")}className="nav-link text-light me-3">Welcome, {store.user.first_name}</span>
 								</li>
 								<li className="nav-item">
-									<span onClick={handleLog} className="nav-link">Logout</span>
+									<span
+										onClick={handleLog}
+										className="nav-link text-light clickable">
+										Logout
+									</span>
 								</li>
 							</ul>
 						) : (
@@ -72,7 +87,5 @@ export const Navbar = () => {
 				</div>
 			</div>
 		</nav>
-
 	);
 };
-
