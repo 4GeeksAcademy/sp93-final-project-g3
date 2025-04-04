@@ -10,8 +10,7 @@ export const GetInspired = () => {
 
   useEffect(() => {
     getFinishedTrips(1); // Default to page 1
-    getFavoriteTrips();
-  }, [getFinishedTrips, getFavoriteTrips]);
+  }, [getFinishedTrips]);
 
   const handlePagination = (page) => {
     getFinishedTrips(page); // Load the trips for the selected page
@@ -44,7 +43,7 @@ export const GetInspired = () => {
     });
   };
 
-  const handleFavorite = async (e, tripId) => {
+  /* const handleFavorite = async (e, tripId) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -57,7 +56,7 @@ export const GetInspired = () => {
     if (!success) {
       alert("Error updating favorite status.");
     }
-  };
+  }; */
 
   return (
     <div className="trips-container">
@@ -95,8 +94,8 @@ export const GetInspired = () => {
                 </button> */}
                 {favorites.find(fav => fav.trip_id === trip.id) ? (
                   <button
-                    className="favorite-btn-liked"
-                    onClick={(e) => handleFavorite(e, trip.id)}
+                    className="favorite-btn favorite-btnliked"
+                    onClick={() => { actions.removeFavorite(trip.id) }}
                     title="Remove from favorites"
                   >
                     <i className="fas fa-heart"></i>
@@ -104,7 +103,7 @@ export const GetInspired = () => {
                 ) : (
                   <button
                     className="favorite-btn"
-                    onClick={(e) => handleFavorite(e, trip.id)}
+                    onClick={() => { actions.addFavorite(trip.id) }}
                     title="Add to favorites"
                   >
                     <i className="fas fa-heart"></i>

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { InputSearch } from "../component/InputSearch.jsx";
 import { Context } from "../store/appContext";
+import { Link } from "react-router-dom";
 import "../../styles/find.css";
 
 export const Find = () => {
@@ -8,7 +9,7 @@ export const Find = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const [localFilters, setLocalFilters] = useState({
     minAge: "",
     maxAge: "",
@@ -18,6 +19,8 @@ export const Find = () => {
 
   const [page, setPage] = useState(1);
   const resultsPerPage = 10;
+  const currentPage = page;
+  const totalPages = Math.ceil((store.searchResults?.length || 0) / resultsPerPage);
 
   const paginatedResults = (store.searchResults || []).slice(
     (page - 1) * resultsPerPage,
@@ -39,8 +42,9 @@ export const Find = () => {
       budget: localFilters.budget || "",
       sort_by_price: localFilters.sortByPrice || "",
     });
-  
+
     actions.performSearch(params.toString());
+    setPage(1); // Reset to first page on new search
   };
 
   const handleLocalFilterChange = (filterName, value) => {
@@ -50,13 +54,13 @@ export const Find = () => {
   const handleApplyFilters = () => {
     actions.updateSearchCriteria({ filters: localFilters });
     actions.performSearch();
+    setPage(1); // Reset to first page on filters applied
   };
 
-  const handlePagination = (page) => {
-    getFinishedTrips(page); // Load the trips for the selected page
-    window.scrollTo(0, 0); // Scroll back to top when changing pages
+  const handlePagination = (newPage) => {
+    setPage(newPage);
+    window.scrollTo(0, 0);
   };
-
 
   return (
     <div className="find-trips-container">
@@ -136,7 +140,7 @@ export const Find = () => {
                 <strong>Age Range:</strong> {trip.age_min} - {trip.age_max} <br />
                 <strong>Description:</strong> {trip.description} <br />
               </p>
-              <button className="btn details-btn">See More</button>
+              <Link to={`/trip/${trip.id}`} className="btn details-btn">See More</Link>
             </div>
           </div>
         ))}
@@ -152,7 +156,7 @@ export const Find = () => {
           >
             &laquo; Previous
           </button>
-          
+
           <div className="page-numbers">
             {[...Array(totalPages).keys()].map((num) => (
               <button
@@ -164,7 +168,7 @@ export const Find = () => {
               </button>
             ))}
           </div>
-          
+
           <button
             className="pagination-btn"
             disabled={currentPage >= totalPages}

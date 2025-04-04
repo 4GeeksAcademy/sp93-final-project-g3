@@ -178,6 +178,32 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("Trip successfully created", getStore().Trips)
 				return data
 			},
+			searchTrips: async () => {
+				const store = getStore();
+				const criteria = store.searchCriteria;
+				const queryParams = new URLSearchParams();
+			
+				if (criteria.destination) queryParams.append("destination", criteria.destination);
+				if (criteria.startDate) queryParams.append("start_date", criteria.startDate);
+				if (criteria.endDate) queryParams.append("end_date", criteria.endDate);
+				if (criteria.filters?.minAge) queryParams.append("minAge", criteria.filters.minAge);
+				if (criteria.filters?.maxAge) queryParams.append("maxAge", criteria.filters.maxAge);
+				if (criteria.filters?.budget) queryParams.append("budget", criteria.filters.budget);
+				if (criteria.filters?.sortByPrice) queryParams.append("sortByPrice", criteria.filters.sortByPrice);
+			
+				const uri = `${process.env.BACKEND_URL}/api/trips/search?${queryParams.toString()}`;
+			
+				try {
+					const response = await fetch(uri);
+					if (!response.ok) throw new Error("Error fetching search results");
+					const data = await response.json();
+					console.log("Search Results:", data.results);
+			
+					setStore({ searchResults: data.results });
+				} catch (error) {
+					console.error("Error during searchTrips:", error);
+				}
+			},
 			updateSearchCriteria: (newCriteria) => {
 				const store = getStore();
 				setStore({
@@ -203,7 +229,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					console.error("Error fetching finished trips:", error);
 				}
 			},
-			getFavoriteTrips: async () => {
+			/* getFavoriteTrips: async () => {
 				const store = getStore();
 				const uri = `${process.env.BACKEND_URL}/api/favorites`;
 				const token = localStorage.getItem("token");
@@ -223,8 +249,8 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const data = await response.json();
 				setStore({ favorites: data.results })
 				console.log("data de get favs:", data);
-			},
-			toggleFavorite: async (tripId) => {
+			}, */
+			/* toggleFavorite: async (tripId) => {
 				try {
 				  const store = getStore();
 				  const token = localStorage.getItem("token");
@@ -266,7 +292,117 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				  console.error("Error toggling favorite:", error);
 				  return false;
 				}
-			  }
+			  } */
+			getFavoriteTrips: async () => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/favorites`;
+				const token = localStorage.getItem("token");
+				const options = {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+				};
+				const response = await fetch(uri, options);
+				console.log("get favorites:", response)
+				if (!response.ok) {
+					console.log("error getting favs trips:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ favorites: data.results })
+				console.log("data de get favs:", data);
+			},
+			/* toggleFavorite: async (tripId) => {
+				try {
+					const store = getStore();
+					const token = localStorage.getItem("token");
+					if (!token) throw new Error("No token found");
+	
+					// Check if the trip is already in favorites based on the trip_id field
+					const isFavorite = store.favorites.some(fav => fav.trip_id === tripId);
+					const method = isFavorite ? "DELETE" : "POST";
+					const url = `${process.env.BACKEND_URL}/api/trips/${tripId}/favorites`;
+	
+					console.log("Toggling favorite for trip:", tripId, "Method:", method);
+					const resp = await fetch(url, {
+						method: method,
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": "Bearer " + token
+						}
+					});
+	
+					if (!resp.ok) {
+						const errorText = await resp.text();
+						throw new Error(`Error ${resp.status}: ${errorText}`);
+					}
+	
+					if (isFavorite) {
+						// Remove the favorite from the store
+						setStore({ favorites: store.favorites.filter(fav => fav.trip_id !== tripId) });
+						console.log("Trip removed from favorites:", tripId);
+					} else {
+						// Add the favorite to the store
+						const data = await resp.json(); // assume backend returns the new favorite record in data.results
+						setStore({ favorites: [...store.favorites, data.results] });
+						console.log("Trip added to favorites:", tripId);
+					}
+					return true;
+				} catch (error) {
+					console.error("Error toggling favorite:", error);
+					return false;
+				}
+			}, */
+			removeFavorite: async (tripId) => {
+				const store = getStore();
+				const token = localStorage.getItem("token");
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/favorites`;
+				if (!token) throw new Error("No token found");
+
+				const options = {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					}
+				}
+				const response = await fetch(uri, options)
+				if (!response.ok) {
+					console.log("Error deleting fav:", response)
+					return
+				}
+				const data = await response.json();
+				console.log("trip deleted from favs:", data);
+				setStore({ favorites: store.favorites.filter(fav => fav.trip_id !== tripId) })
+				console.log(data);
+			},
+			addFavorite: async (tripId) => {
+
+				const store = getStore();
+				const token = localStorage.getItem("token");
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/favorites`;
+				if (!token) throw new Error("No token found");
+				const options = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+					body: JSON.stringify({ trip_id: tripId})
+				}
+				const response = await fetch(uri, options)
+				if (!response.ok) {
+					console.log("Error adding fav:", response)
+					return
+				}
+				const data = await response.json();
+				console.log("trip added to favs:", data);
+				setStore({ favorites: [...store.favorites, data] })
+				console.log(data);
+			}
+
 		}
 	};
 };
