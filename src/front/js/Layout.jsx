@@ -13,6 +13,8 @@ import { Login } from "./pages/Login.jsx";
 import { Register } from "./pages/Register.jsx";
 import { Find } from "./pages/Find.jsx";
 import { DesignTrip } from "./pages/DesignTrip.jsx";
+import { EditProfile } from "./pages/EditProfile.jsx";
+import { Profile } from "./pages/Profile.jsx";
 import { TripPage } from "./pages/TripPage.jsx";
 
 // Create your first component
@@ -32,6 +34,8 @@ const Layout = () => {
                         <Route element={<Error404 />} path='*' />
                         <Route element={<Login />} path="/login/" />
                         <Route element={<Register />} path="/register/" />
+                        <Route element={<EditProfile />} path="/edit-profile/" />
+                        <Route element={<Profile />} path="/profile/" />
                         <Route element={<Find />} path="/find/" />
                         <Route element={<DesignTrip />} path="/design-trip/" />
                         <Route element={<TripPage />} path="/trip-page/:tripId" />
