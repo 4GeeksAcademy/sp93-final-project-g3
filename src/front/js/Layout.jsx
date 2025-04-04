@@ -15,13 +15,14 @@ import { Find } from "./pages/Find.jsx";
 import { DesignTrip } from "./pages/DesignTrip.jsx";
 import { EditProfile } from "./pages/EditProfile.jsx";
 import { Profile } from "./pages/Profile.jsx";
+import { TripPage } from "./pages/TripPage.jsx";
 
 // Create your first component
 const Layout = () => {
     // The basename is used when your project is published in a subdirectory and not in the root of the domain
     // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
     const basename = process.env.BASENAME || "";
-    if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL/ >;
+    if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
     return (
         <div>
@@ -37,6 +38,7 @@ const Layout = () => {
                         <Route element={<Profile />} path="/profile/" />
                         <Route element={<Find />} path="/find/" />
                         <Route element={<DesignTrip />} path="/design-trip/" />
+                        <Route element={<TripPage />} path="/trip-page/:tripId" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>

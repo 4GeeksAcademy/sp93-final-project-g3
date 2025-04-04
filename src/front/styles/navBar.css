@@ -1,0 +1,23 @@
+/* Estilos específicos para la barra de navegación */
+
+/* Clase para elementos clickeables */
+.clickable {
+    cursor: pointer;
+}
+
+/* Eliminar subrayado de elementos clickeables */
+.nav-link.clickable {
+    text-decoration: none;
+}
+
+/* Efectos hover opcionales para mejorar la experiencia de usuario */
+.nav-link.clickable:hover {
+    opacity: 0.8;
+}
+
+/* Puedes añadir también estilos específicos para los botones en el navbar */
+.navbar-custom .btn {
+    transition: all 0.3s ease;
+}
+
+/* Otros estilos personalizados para tu navbar pueden ir aquí */
