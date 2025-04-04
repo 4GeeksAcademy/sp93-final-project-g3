@@ -35,9 +35,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					body: JSON.stringify(dataToSend)
 				};
 				const response = await fetch(uri, options)
-				const response = await fetch(uri, options)
 				console.log("login response", response)
-				if (!response.ok) {
 				if (!response.ok) {
 					console.log('Error login:', response.status, response.statusText)
 					return
@@ -86,9 +84,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					body: JSON.stringify(dataToSend)
 				};
 				const response = await fetch(uri, options)
-				const response = await fetch(uri, options)
 				console.log("register response", response)
-				if (!response.ok) {
 				if (!response.ok) {
 					console.log('Error registering:', response.status, response.statusText)
 					return
@@ -226,9 +222,6 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			// 			}
 			// 		}).catch(error => console.error("Error fetching details:", error));
 			// },
-		}
-	}
-			},
 			searchTrips: async () => {
 				const store = getStore();
 				const criteria = store.searchCriteria;
