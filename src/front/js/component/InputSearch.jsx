@@ -4,7 +4,7 @@ import { LoadScript, Autocomplete } from "@react-google-maps/api";
 const libraries = ["places"];
 const API_KEY = process.env.GOOGLE_API_KEY;
 
-export const InputSearch = ({ onPlaceSelected }) => {
+export const InputSearch = () => {
     const [autocomplete, setAutocomplete] = useState(null);
 
     const onLoad = (autoC) => setAutocomplete(autoC);
@@ -12,9 +12,7 @@ export const InputSearch = ({ onPlaceSelected }) => {
     const onPlaceChanged = () => {
         if (autocomplete) {
             const place = autocomplete.getPlace();
-            if (place && place.formatted_address) {
-                onPlaceSelected(place);
-            }
+            console.log("Dirección:", place);
         }
     };
     return (

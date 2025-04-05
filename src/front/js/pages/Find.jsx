@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { InputSearch } from "../component/InputSearch.jsx";
 import { Context } from "../store/appContext";
+import { Link } from "react-router-dom";
 import "../../styles/find.css";
 
 export const Find = () => {
@@ -8,7 +9,7 @@ export const Find = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const [localFilters, setLocalFilters] = useState({
     minAge: "",
     maxAge: "",
@@ -18,6 +19,8 @@ export const Find = () => {
 
   const [page, setPage] = useState(1);
   const resultsPerPage = 10;
+  const currentPage = page;
+  const totalPages = Math.ceil((store.searchResults?.length || 0) / resultsPerPage);
 
   const paginatedResults = (store.searchResults || []).slice(
     (page - 1) * resultsPerPage,
@@ -30,8 +33,18 @@ export const Find = () => {
   };
 
   const handleSearch = () => {
-    actions.updateSearchCriteria({ startDate, endDate });
-    actions.performSearch();
+    const params = new URLSearchParams({
+      destination: store.searchCriteria.destination || "",
+      start_date: startDate || "",
+      end_date: endDate || "",
+      min_age: localFilters.minAge || "",
+      max_age: localFilters.maxAge || "",
+      budget: localFilters.budget || "",
+      sort_by_price: localFilters.sortByPrice || "",
+    });
+
+    actions.performSearch(params.toString());
+    setPage(1); // Reset to first page on new search
   };
 
   const handleLocalFilterChange = (filterName, value) => {
@@ -41,10 +54,12 @@ export const Find = () => {
   const handleApplyFilters = () => {
     actions.updateSearchCriteria({ filters: localFilters });
     actions.performSearch();
+    setPage(1); // Reset to first page on filters applied
   };
 
   const handlePagination = (newPage) => {
     setPage(newPage);
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -125,20 +140,44 @@ export const Find = () => {
                 <strong>Age Range:</strong> {trip.age_min} - {trip.age_max} <br />
                 <strong>Description:</strong> {trip.description} <br />
               </p>
-              <button className="btn details-btn">See More</button>
+              <Link to={`/trip/${trip.id}`} className="btn details-btn">See More</Link>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="pagination">
-        <button className="btn pagination-btn" onClick={() => handlePagination(page - 1)} disabled={page === 1}>
-          Previous
-        </button>
-        <button className="btn pagination-btn" onClick={() => handlePagination(page + 1)}>
-          Next
-        </button>
-      </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination-container">
+          <button
+            className="pagination-btn"
+            disabled={currentPage <= 1}
+            onClick={() => handlePagination(currentPage - 1)}
+          >
+            &laquo; Previous
+          </button>
+
+          <div className="page-numbers">
+            {[...Array(totalPages).keys()].map((num) => (
+              <button
+                key={num + 1}
+                className={`page-number ${currentPage === num + 1 ? "active" : ""}`}
+                onClick={() => handlePagination(num + 1)}
+              >
+                {num + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="pagination-btn"
+            disabled={currentPage >= totalPages}
+            onClick={() => handlePagination(currentPage + 1)}
+          >
+            Next &raquo;
+          </button>
+        </div>
+      )}
     </div>
   );
 };
