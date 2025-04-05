@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "../../styles/profile.css";
 import { Context } from "../store/appContext";
+import { UploadImage } from "../component/UploadImage.jsx";
+
+//import { AdvancedImage } from "@cloudinary/react";
 
 export const Profile = () => {
   const navigate = useNavigate();
@@ -11,6 +14,10 @@ export const Profile = () => {
   const { totalPages, currentPage, favorites, myTrips } = store;
   const { getFavoriteTrips, getMyTrips } = actions;
   const currentUserId = store.user?.id;
+
+  const handleUploadSuccess = (imageUrl) => {
+    actions.updateProfilePhoto(imageUrl)
+  }
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -61,6 +68,7 @@ export const Profile = () => {
             src={store.user.photo || "https://randomuser.me/api/portraits/lego/5.jpg"}
             className="profile-image"
             alt="Profile" />
+            <UploadImage onUploadSuccess={handleUploadSuccess} />
           <h2 className="profile-title">{store.user.first_name} {store.user.last_name}</h2>
           {activeTab === "profile" && (
             <button

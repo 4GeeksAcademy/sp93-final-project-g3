@@ -5,9 +5,9 @@ Revision ID: 4424806080a6
 Revises: 
 Create Date: 2025-04-02 14:20:19.214899
 ========
-Revision ID: e1c0d336317e
+Revision ID: 882ddccbfdba
 Revises: 
-Create Date: 2025-03-31 18:45:01.001034
+Create Date: 2025-04-03 17:47:23.111709
 >>>>>>>> develop:migrations/versions/e1c0d336317e_.py
 
 """
@@ -19,7 +19,7 @@ import sqlalchemy as sa
 <<<<<<<< HEAD:migrations/versions/4424806080a6_.py
 revision = '4424806080a6'
 ========
-revision = 'e1c0d336317e'
+revision = '882ddccbfdba'
 >>>>>>>> develop:migrations/versions/e1c0d336317e_.py
 down_revision = None
 branch_labels = None

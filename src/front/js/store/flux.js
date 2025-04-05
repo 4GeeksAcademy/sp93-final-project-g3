@@ -177,6 +177,44 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					throw error;
 				}
 			},
+			updateProfilePhoto: async (photo) => {
+				const uri = `${process.env.BACKEND_URL}/api/user/photo`;
+				const token = localStorage.getItem('token');
+				const options = {
+				  method: 'PUT',
+				  headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token}`,
+				  },
+				  body: JSON.stringify(photo),
+				};
+				try {
+				  const response = await fetch(uri, options);
+				  const data = await response.json();
+				  console.log("Response data update photo:", data);
+				  if (!response.ok) {
+					console.error("Error details:", {
+					  status: response.status,
+					  statusText: response.statusText,
+					  errorData: data,
+					});
+					throw new Error(data.message || 'Failed to update photo');
+				  }
+				  const updatedUser = data.results;
+				  setStore({
+					user: updatedUser, // Actualiza el estado global del usuario
+				  });
+				  localStorage.setItem('user', JSON.stringify(updatedUser)); // Guarda la información en localStorage
+				  return true;
+				} catch (error) {
+				  console.error('Error updating profile:', {
+					error: error,
+					photo: photo,
+					token: token,
+				  });
+				  throw error;
+				}
+			  },
 			getMessage: async () => {
 				const uri = `${process.env.BACKEND_URL}/api/hello`
 				const response = await fetch(uri)
