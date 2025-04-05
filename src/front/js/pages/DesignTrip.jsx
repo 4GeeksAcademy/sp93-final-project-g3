@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { InputSearch } from "../component/InputSearch.jsx";
 import { Context } from "../store/appContext";
 import "../../styles/designTrip.css";
+import { useNavigate } from "react-router-dom";
+
 
 export const DesignTrip = () => {
   const { store, actions } = useContext(Context);
@@ -17,6 +19,7 @@ export const DesignTrip = () => {
   const [ageMin, setAgeMin] = useState("");
   const [ageMax, setAgeMax] = useState("");
   const status = "planning";
+  const navigate = useNavigate();
 
   const handlePlaceSelected = (place) => {
     const dest = place.formatted_address || place.name;
@@ -40,11 +43,14 @@ export const DesignTrip = () => {
     };
 
     const result = await actions.createTrip(tripData);
+    console.log(result)
     if (result && result.results) {
-      alert("Trip created successfully!");
+      navigate(`/trip-page/${result.results.id}`)
+
     } else {
       alert("Error creating trip. Please try again.");
     }
+
   };
 
   return (

@@ -9,6 +9,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import get_jwt
+from sqlalchemy.orm import aliased
 from datetime import datetime
 import requests
 
@@ -293,6 +294,78 @@ def get_trips():
     return jsonify(response_body), 200
 
 
+# GET /trips → busqueda de viajes
+@api.route('/trips/search', methods=['GET'])
+def search_trips():
+    destination = request.args.get('destination', type=str)
+    start_date = request.args.get('start_date', type=str)
+    end_date = request.args.get('end_date', type=str)
+    min_age = request.args.get('minAge', type=int)
+    max_age = request.args.get('maxAge', type=int)
+    budget = request.args.get('budget', type=float)
+    sort_by_price = request.args.get('sortByPrice', type=str)
+
+    query = Trips.query
+
+    if destination:
+        query = query.filter(Trips.destination.ilike(f"%{destination}%"))
+    if start_date:
+        query = query.filter(Trips.start_date >= start_date)
+    if end_date:
+        query = query.filter(Trips.end_date <= end_date)
+    if min_age:
+        query = query.filter(Trips.age_min >= min_age)
+    if max_age:
+        query = query.filter(Trips.age_max <= max_age)
+    if budget:
+        query = query.filter(Trips.budget <= budget)
+    if sort_by_price:
+        query = query.order_by(Trips.budget.asc() if sort_by_price == "asc" else Trips.budget.desc())
+
+    results = query.all()
+    return jsonify({"results": [trip.serialize() for trip in results]}), 200
+
+
+# GET /trips → busqueda de viajes terminados - pagina de inspiracion
+@api.route('/trips/finished', methods=['GET'])
+def get_finished_trips():
+    page = request.args.get("page", 1, type=int)  # Obtener el número de página
+    per_page = 10  # Número de resultados por página
+
+    query = Trips.query.filter_by(status="finished").order_by(Trips.end_date.desc())
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    results = pagination.items
+
+    return jsonify({
+        "results": [trip.serialize() for trip in results],
+        "total_pages": pagination.pages,
+        "current_page": pagination.page
+    }), 200
+
+
+# GET /mytrips - busqueda de los viajes del usuario logeado
+@api.route('/user/mytrips', methods=['GET'])
+@jwt_required()
+def get_my_trips():
+    current_user_id = get_jwt()['user_id']
+    
+    # Alias para la relación entre "Users" y "Trips"
+    traveler_alias = aliased(Travelers)
+
+    # Obtenemos los viajes donde el usuario es el host o el viajero aprobado
+    trips_as_host = Trips.query.filter_by(host_id=current_user_id).all()
+    trips_as_traveler = Trips.query.join(traveler_alias, traveler_alias.trip_id == Trips.id).filter(
+        traveler_alias.traveler_id == current_user_id, traveler_alias.authorization == 'approved'
+    ).all()
+
+    # Unimos ambos conjuntos de viajes
+    all_trips = trips_as_host + trips_as_traveler
+
+    # Serializamos y devolvemos los viajes encontrados
+    return jsonify({"mytrips": [trip.serialize() for trip in all_trips]}), 200
+
+
 # DELETE /trips/{id} → Cancelar un viaje (solo anfitrión del viaje)
 @api.route('/trips/<int:trip_id>', methods=['DELETE'])
 @jwt_required() 
@@ -548,6 +621,42 @@ def favorites(trip_id):
         response_body['message'] = 'Favorite trip deleted successfully'
         return response_body, 200
 
+
+@api.route('/favorites/check/<int:trip_id>', methods=['GET'])
+@jwt_required()
+def check_favorite(trip_id):
+    user_id = get_jwt()['user_id']
+    
+    favorite = Favorites.query.filter_by(user_id=user_id, trip_id=trip_id).first()
+    is_favorite = favorite is not None
+    
+    return jsonify({
+        "message": "Favorite status checked",
+        "is_favorite": is_favorite
+    }), 200
+
+
+# Endpoint para obtener todos los favoritos del usuario
+@api.route('/favorites', methods=['GET'])
+@jwt_required()
+def get_user_favorites():
+    user_id = get_jwt()['user_id']
+    
+    favorites_query = db.session.query(Favorites, Trips)\
+        .join(Trips, Favorites.trip_id == Trips.id)\
+        .filter(Favorites.user_id == user_id)\
+        .all()
+    
+    results = []
+    for favorite, trip in favorites_query:
+        trip_data = trip.serialize()
+        trip_data['favorite_id'] = favorite.id
+        results.append(trip_data)
+    
+    return jsonify({
+        "message": "User favorites retrieved successfully",
+        "results": results
+    }), 200
 
     
 #https://cloudinary.com/

@@ -1,19 +1,28 @@
 /* Navbar Background */
 .navbar-custom {
-    background-color: #5B52BC !important; /* Color 1 */
+    background-color: #5B52BC !important;
+    /* Color 1 */
 }
+
+
 
 /* Button Styles */
 .btn-login {
-    background-color: #7E77CA !important; /* Color 3 */
+    background-color: #7E77CA !important;
+    /* Color 3 */
     color: white !important;
     border: none;
 }
 
 .btn-register {
-    background-color: #FF5942 !important; /* Color 5 */
+    background-color: #FF5942 !important;
+    /* Color 5 */
     color: white !important;
     border: none;
+}
+
+.btn-heart {
+color: white
 }
 
 /* Hover Effects */
@@ -25,11 +34,31 @@
     background-color: #FFA5A0 !important;
 }
 
+.btn-register:hover {
+    color: #FFA5A0 !important;
+    border-color: #FFA5A0;
+}
+
+.btn-register:active {
+    color: #FF5942 !important;
+    border-color: #FFA5A0;
+}
+
 /* Fonts */
-h1, h2, h3 {
+/* h1,
+h2, */
+/* h3 {
     font-family: 'Playfair Display', serif;
 }
 
 p {
     font-family: 'Merriweather', serif;
+} */
+
+.clickableStyle {
+    cursor: 'pointer'
+}
+
+body {
+    font-family: 'Poppins', sans-serif !important;
 }
