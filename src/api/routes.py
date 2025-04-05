@@ -9,6 +9,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import get_jwt
+from sqlalchemy.orm import aliased
 from datetime import datetime
 import requests
 
@@ -341,6 +342,29 @@ def get_finished_trips():
         "total_pages": pagination.pages,
         "current_page": pagination.page
     }), 200
+
+
+# GET /mytrips - busqueda de los viajes del usuario logeado
+@api.route('/user/mytrips', methods=['GET'])
+@jwt_required()
+def get_my_trips():
+    current_user_id = get_jwt()['user_id']
+    
+    # Alias para la relación entre "Users" y "Trips"
+    traveler_alias = aliased(Travelers)
+
+    # Obtenemos los viajes donde el usuario es el host o el viajero aprobado
+    trips_as_host = Trips.query.filter_by(host_id=current_user_id).all()
+    trips_as_traveler = Trips.query.join(traveler_alias, traveler_alias.trip_id == Trips.id).filter(
+        traveler_alias.traveler_id == current_user_id, traveler_alias.authorization == 'approved'
+    ).all()
+
+    # Unimos ambos conjuntos de viajes
+    all_trips = trips_as_host + trips_as_traveler
+
+    # Serializamos y devolvemos los viajes encontrados
+    return jsonify({"mytrips": [trip.serialize() for trip in all_trips]}), 200
+
 
 # DELETE /trips/{id} → Cancelar un viaje (solo anfitrión del viaje)
 @api.route('/trips/<int:trip_id>', methods=['DELETE'])

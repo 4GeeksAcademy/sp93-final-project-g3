@@ -45,7 +45,6 @@ export const DesignTrip = () => {
     const result = await actions.createTrip(tripData);
     console.log(result)
     if (result && result.results) {
-      alert("Trip created successfully!");
       navigate(`/trip-page/${result.results.id}`)
 
     } else {

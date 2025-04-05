@@ -6,6 +6,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			isLogged: false,
 			isAdmin: false,
 			trips: {},
+			myTrips: [],
 			finishedTrips: [],
 			searchResults: [],
 			searchCriteria: {
@@ -19,9 +20,6 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			selectedTrip: {}
 		},
 		actions: {
-			setUser: (newUser) => { setStore({ user: newUser }) },
-			setIsLogged: (value) => { setStore({ isLogged: value }) },
-			setIsAdmin: (value) => { setStore({ isAdmin: value }) },
 			setUser: (newUser) => { setStore({ user: newUser }) },
 			setIsLogged: (value) => { setStore({ isLogged: value }) },
 			setIsAdmin: (value) => { setStore({ isAdmin: value }) },
@@ -52,18 +50,29 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				localStorage.setItem('user', JSON.stringify(data.results))
 				console.log("user is logged", getStore().isLogged)
 				getActions().getFavoriteTrips()
+				getActions().getMyTrips()
+				console.log("login my trips:", getStore().myTrips)
 			},
 			isUserLogged: () => {
-				const data = JSON.parse(localStorage.getItem('user'))
-				console.log(data);
-
-				if (data) {
+				const token = localStorage.getItem("token");
+				const user = localStorage.getItem("user");
+				if (!token || !user) {
+					// Limpieza adicional por seguridad
+					localStorage.removeItem("token");
+					localStorage.removeItem("user");
 					setStore({
-						user: data,
-						isAdmin: data.is_admin,
-						isLogged: true
-					})
+						user: {},
+						isLogged: false,
+						isAdmin: false
+					});
+					return;
 				}
+				const parsedUser = JSON.parse(user);
+				setStore({
+					user: parsedUser,
+					isAdmin: parsedUser.is_admin,
+					isLogged: true
+				});
 			},
 			logout: () => {
 				localStorage.removeItem('token');
@@ -72,8 +81,12 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					user: {},
 					isLogged: false,
 					isAdmin: false,
-				})
-				console.log("user is logged out")
+					trips: {},
+					favorites: []
+				});
+				console.log("user is logged out");
+				// Opcional: recarga para resetear cualquier estado residual
+				window.location.href = "/"; // o usa navigate("/") si estás usando React Router
 			},
 			register: async (dataToSend) => {
 				const uri = `${process.env.BACKEND_URL}/api/register`;
@@ -200,6 +213,45 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("Trip successfully created", getStore().trips)
 				return data
 			},
+			getTrips: async () => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/trips`;
+				const options = {
+					method: 'GET',
+					headers: { "Content-Type": "application/json" }, 
+				};
+				const response = await fetch(uri, options);
+				console.log("get trips:", response)
+				if (!response.ok) {
+					console.log("error getting trips:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ trips: data.results })
+				console.log("data de get trips:", data.results);
+			},
+			getMyTrips: async (page = 1) => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/user/mytrips?page=${page}`;
+				const token = localStorage.getItem("token");
+				const options = {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+				};
+				const response = await fetch(uri, options);
+				console.log("get my trips:", response)
+				if (!response.ok) {
+					console.log("error getting my trips:", response);
+					return
+				}
+				const data = await response.json();
+				console.log("Data recieved from getMyTrips:", data)
+				setStore({ myTrips: data.mytrips })
+				console.log("data de get my trips", data.mytrips);
+			},
 			getTrip: async (tripId) => {
 				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}`;
 				const token = localStorage.getItem("token");
@@ -281,9 +333,9 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					console.error("Error fetching finished trips:", error);
 				}
 			},
-			getFavoriteTrips: async () => {
+			getFavoriteTrips: async (page = 1) => {
 				const store = getStore();
-				const uri = `${process.env.BACKEND_URL}/api/favorites`;
+				const uri = `${process.env.BACKEND_URL}/api/favorites?page=${page}`;
 				const token = localStorage.getItem("token");
 				const options = {
 					method: "GET",

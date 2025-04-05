@@ -2,11 +2,13 @@ import React, { useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
 import "../../styles/getInspired.css";
+import { useNavigate } from "react-router-dom";
 
 export const GetInspired = () => {
   const { store, actions } = useContext(Context);
   const { finishedTrips, totalPages, currentPage, favorites } = store;
   const { getFinishedTrips } = actions;
+  const navigate = useNavigate();
 
   useEffect(() => {
     getFinishedTrips(1); // Default to page 1
@@ -104,9 +106,9 @@ export const GetInspired = () => {
                     </p>
                   )}
                 </div>
-                <Link to={`/trips/${trip.id}`} className="view-more-btn">
+                <button onClick={() => navigate(`/trip-page/${trip.id}`)} className="view-more-btn">
                   View Details <i className="fas fa-arrow-right"></i>
-                </Link>
+                </button>
               </div>
             </div>
           ))}

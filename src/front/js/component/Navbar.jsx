@@ -19,7 +19,7 @@ export const Navbar = () => {
 		}
 	}
 
-	
+
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-custom">
@@ -57,22 +57,31 @@ export const Navbar = () => {
 					</ul>
 
 					<div className="d-flex align-items-center">
-						<button className="btn btn-outline-light me-2">
-							<i className="fas fa-heart"></i>
-						</button>
 						{store.isLogged ? (
-							<ul className="navbar-nav me-auto mb-2 mb-lg-0">
-								<li className="nav-item">
-									<span onClick={() => navigate("/profile")}className="nav-link text-light me-3">Welcome, {store.user.first_name}</span>
-								</li>
-								<li className="nav-item">
-									<span
-										onClick={handleLog}
-										className="nav-link text-light clickable">
-										Logout
-									</span>
-								</li>
-							</ul>
+							<div className="d-flex align-items-center">
+										<span onClick={() => navigate("/profile")} className="nav-link text-light me-3 clickable">Welcome, {store.user.first_name}</span>
+							
+										<span
+											onClick={handleLog}
+											className="nav-link text-light clickable">
+											Logout
+										</span>
+							
+								<button id="btnGroupDrop1" type="button" className="btn btn-heart dropdown-toggle me-2" data-bs-toggle="dropdown" aria-expanded="false">
+									<i className="fas fa-heart"></i>
+								</button>
+								<ul className="dropdown-menu dropdown-menu-end p-2" aria-labelledby="btnGroupDrop1">
+									{store.favorites.length === 0 ? (
+										<li className="disabled px-2"> No favorites </li>) : (
+										store.favorites.map((item) => (
+											<li key={item.id} className="dropdown-item d-flex justify-content-between align-items-center">
+												<span>{item.destination}</span>
+												<i className="fa fa-trash text-danger pointer px-2" onClick={() => { actions.removeFavorite(item) }}></i>
+											</li>
+										)
+										))}
+								</ul>
+							</div>
 						) : (
 							<ul className="navbar-nav me-auto mb-2 mb-lg-0">
 								<li className="nav-item">
