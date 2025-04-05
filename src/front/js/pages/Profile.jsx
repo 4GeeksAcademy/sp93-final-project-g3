@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/profile.css";
 import { Context } from "../store/appContext";
+import { AdvancedImage } from "@cloudinary/react";
+import { UploadImage } from "../component/UploadImage";
 
 export const Profile = () => {
     const navigate = useNavigate();
@@ -16,10 +18,11 @@ export const Profile = () => {
         <div className="profile-container">
             <div className="profile-card">
                 <div className="profile-header">
-                    <img
+                <UploadImage cldImg={cld.image('/cld-sample-5').resize(Resize.scale().width(325).height(250))} />
+                    {/* <img
                         src={store.user.photo || "https://randomuser.me/api/portraits/lego/5.jpg"}
                         className="profile-image"
-                        alt="Profile" />
+                        alt="Profile" /> */}
                     <h2 className="profile-title">{store.user.first_name} {store.user.last_name}</h2>
                     {activeTab === "profile" && (
                         <button

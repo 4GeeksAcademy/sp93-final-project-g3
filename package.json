@@ -72,7 +72,10 @@
 		]
 	},
 	"dependencies": {
+		"@cloudinary/react": "^1.14.1",
+		"@cloudinary/url-gen": "^1.21.0",
 		"@react-google-maps/api": "^2.20.6",
+		"cloudinary-react": "^1.8.1",
 		"prop-types": "^15.6.1",
 		"react": "^16.8.4",
 		"react-dom": "^16.8.4",

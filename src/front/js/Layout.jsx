@@ -15,6 +15,7 @@ import { Find } from "./pages/Find.jsx";
 import { DesignTrip } from "./pages/DesignTrip.jsx";
 import { EditProfile } from "./pages/EditProfile.jsx";
 import { Profile } from "./pages/Profile.jsx";
+import { UploadImage } from "./component/UploadImage.jsx";
 
 // Create your first component
 const Layout = () => {
@@ -37,6 +38,7 @@ const Layout = () => {
                         <Route element={<Profile />} path="/profile/" />
                         <Route element={<Find />} path="/find/" />
                         <Route element={<DesignTrip />} path="/design-trip/" />
+                        <Route element={<UploadImage />} path="/image/" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
