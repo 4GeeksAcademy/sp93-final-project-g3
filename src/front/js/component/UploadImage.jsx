@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Cloudinary } from "@cloudinary/url-gen";
-import { AdvancedImage } from "@cloudinary/react";
-import { Resize } from "@cloudinary/url-gen/actions/resize";
 import { useContext } from "react";
 import { Context } from "../store/appContext";
 
@@ -71,16 +69,12 @@ export const UploadImage = () => {
   return (
     <div className="container align-items-center">
       <div className="m-auto">
-        <button id="upload_widget" className="cloudinary-button">
-          <i className="fas fa-camera"></i> Cambiar foto de perfil
+        <button id="upload_widget" className="edit-profile-btn">
+          <i className="fas fa-camera"></i> Change your profile picture
         </button>
         {imageUrl && (
           <div className="mt-3">
-            {/* <AdvancedImage
-              cldImg={cld.image(imageUrl).resize(Resize.fill().width(150).height(150))}
-              className="img-thumbnail rounded-circle"
-            /> */}
-            <p className="text-success mt-2">¡Imagen subida con éxito!</p>
+            <p className="text-success mt-2">Image uploaded successfully</p>
           </div>
         )}
       </div>

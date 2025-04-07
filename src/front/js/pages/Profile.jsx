@@ -65,14 +65,14 @@ export const Profile = () => {
       <div className="profile-card">
         <div className="profile-header">
           <img
-            src={store.user.photo || "https://randomuser.me/api/portraits/lego/5.jpg"}
+            src={store.user.photo || "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI="}
             className="profile-image"
             alt="Profile" />
-            <UploadImage onUploadSuccess={handleUploadSuccess} />
           <h2 className="profile-title">{store.user.first_name} {store.user.last_name}</h2>
+          <UploadImage onUploadSuccess={handleUploadSuccess} />
           {activeTab === "profile" && (
             <button
-              className="edit-profile-btn"
+              className="edit-profile-btn mt-2"
               onClick={() => navigate("/edit-profile")}>
               <i className="fas fa-edit"></i> Edit Profile
             </button>

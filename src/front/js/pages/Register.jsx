@@ -14,11 +14,11 @@ export const Register = () => {
     const [viewPassword, setViewPassword] = useState(false);
     const navigate = useNavigate()
 
-    const handleFirstName = (event) => { setFirstName(event.target.value) }
+    /* const handleFirstName = (event) => { setFirstName(event.target.value) }
     const handleLastName = (event) => { setLastName(event.target.value) }
     const handleEmail = (event) => { setEmail(event.target.value) }
     const handlePassword = (event) => { setPassword(event.target.value) }
-    const handleViewPassword = () => { setViewPassword(!viewPassword) }
+    const handleViewPassword = () => { setViewPassword(!viewPassword) } */
 
     const handleSubmit = (event) => {
         event.preventDefault();
