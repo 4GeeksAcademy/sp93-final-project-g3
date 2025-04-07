@@ -1,10 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Welcome from "../../img/Welcome.png";
 import Testimonies from "../../img/Testimonies.png";
 import "../../styles/home.css";
 
 export const Home = () => {
+    const navigate = useNavigate()
     return (
         <div>
             {/* :earth_africa: Hero Section */}
@@ -12,7 +13,7 @@ export const Home = () => {
                 className="hero-section vh-100 bg-image"
                 style={{ backgroundImage: `url(${Welcome})` }}
             >
-                <button className="mb-5">Start Exploring</button>
+                <button className="mb-5" onClick={() => (navigate("/find"))}>Start Exploring</button>
             </section>
 
             {/* :desert_island: Most Searched Destinations */}

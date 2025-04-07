@@ -1,11 +1,12 @@
 import React, { useContext, useState } from "react";
 import { InputSearch } from "../component/InputSearch.jsx";
 import { Context } from "../store/appContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/find.css";
 
 export const Find = () => {
   const { store, actions } = useContext(Context);
+  const navigate = useNavigate()
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -32,9 +33,10 @@ export const Find = () => {
     actions.updateSearchCriteria({ destination });
   };
 
-  const handleSearch = () => {
+  const handleSearch = (event) => {
+    event.preventDefault()
     const params = new URLSearchParams({
-      destination: store.searchCriteria.destination || "",
+      destination: store.selectedTrip || "",
       start_date: startDate || "",
       end_date: endDate || "",
       min_age: localFilters.minAge || "",
@@ -43,7 +45,7 @@ export const Find = () => {
       sort_by_price: localFilters.sortByPrice || "",
     });
 
-    actions.performSearch(params.toString());
+    actions.searchTrips(params.toString());
     setPage(1); // Reset to first page on new search
   };
 
@@ -53,7 +55,7 @@ export const Find = () => {
 
   const handleApplyFilters = () => {
     actions.updateSearchCriteria({ filters: localFilters });
-    actions.performSearch();
+    actions.searchTrips();
     setPage(1); // Reset to first page on filters applied
   };
 
@@ -65,87 +67,95 @@ export const Find = () => {
   return (
     <div className="find-trips-container">
       <h2 className="title">Find Your Next Adventure</h2>
-
-      <div className="search-section">
-        <InputSearch onPlaceSelected={handlePlaceSelected} />
-        <input
-          type="date"
-          className="input-field"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-        <input
-          type="date"
-          className="input-field"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-        />
-        <button className="btn search-btn" onClick={handleSearch}>
-          Search
-        </button>
-      </div>
-
-      <button className="btn toggle-filters-btn" onClick={() => setShowFilters(!showFilters)}>
-        {showFilters ? "Hide Filters" : "Show Filters"}
-      </button>
-
-      {showFilters && (
-        <div className="filters-section">
+      <form onSubmit={handleSearch}>
+        <div className="search-section">
+          <InputSearch onPlaceSelected={handlePlaceSelected} />
           <input
-            type="number"
+            type="date"
             className="input-field"
-            placeholder="Min Age"
-            value={localFilters.minAge}
-            onChange={(e) => handleLocalFilterChange("minAge", e.target.value)}
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
           />
           <input
-            type="number"
+            type="date"
             className="input-field"
-            placeholder="Max Age"
-            value={localFilters.maxAge}
-            onChange={(e) => handleLocalFilterChange("maxAge", e.target.value)}
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
           />
-          <input
-            type="number"
-            className="input-field"
-            placeholder="Budget"
-            value={localFilters.budget}
-            onChange={(e) => handleLocalFilterChange("budget", e.target.value)}
-          />
-          <select
-            className="input-field"
-            value={localFilters.sortByPrice}
-            onChange={(e) => handleLocalFilterChange("sortByPrice", e.target.value)}
-          >
-            <option value="">Sort by Price</option>
-            <option value="asc">Low to High</option>
-            <option value="desc">High to Low</option>
-          </select>
-          <button className="btn apply-filters-btn" onClick={handleApplyFilters}>
-            Apply Filters
+          <button className="btn search-btn" type="submit">
+            Search
           </button>
         </div>
-      )}
 
+        <button className="btn toggle-filters-btn" onClick={() => setShowFilters(!showFilters)}>
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
+
+        {showFilters && (
+          <div className="filters-section">
+            <input
+              type="number"
+              className="input-field"
+              placeholder="Min Age"
+              value={localFilters.minAge}
+              onChange={(e) => handleLocalFilterChange("minAge", e.target.value)}
+            />
+            <input
+              type="number"
+              className="input-field"
+              placeholder="Max Age"
+              value={localFilters.maxAge}
+              onChange={(e) => handleLocalFilterChange("maxAge", e.target.value)}
+            />
+            <input
+              type="number"
+              className="input-field"
+              placeholder="Budget"
+              value={localFilters.budget}
+              onChange={(e) => handleLocalFilterChange("budget", e.target.value)}
+            />
+            <select
+              className="input-field"
+              value={localFilters.sortByPrice}
+              onChange={(e) => handleLocalFilterChange("sortByPrice", e.target.value)}
+            >
+              <option value="">Sort by Price</option>
+              <option value="asc">Low to High</option>
+              <option value="desc">High to Low</option>
+            </select>
+            <button className="btn apply-filters-btn" onClick={handleApplyFilters}>
+              Apply Filters
+            </button>
+          </div>
+        )}
+      </form>
       <div className="trip-cards-section">
         {paginatedResults.map((trip, index) => (
           <div className="trip-card" key={index}>
-            <img src={trip.photo} className="trip-image" alt={trip.destination} />
-            <div className="trip-details">
-              <h3>{trip.destination}</h3>
-              <p>
-                <strong>Budget:</strong> {trip.budget} {trip.budget_currency} <br />
-                <strong>Dates:</strong> {trip.start_date} to {trip.end_date} <br />
-                <strong>Available Seats:</strong> {trip.available_seats} <br />
-                <strong>Age Range:</strong> {trip.age_min} - {trip.age_max} <br />
-                <strong>Description:</strong> {trip.description} <br />
+            <img src={trip.photo} className="trip-image" />
+            <div className="trip-destination">
+              <h3 className="trip-destination">{trip.destination}</h3>
+              <p className="trip-dates">
+                Start date: {trip.start_date || trip.startDate}
+                End date: {trip.end_date || trip.endDate}
               </p>
-              <Link to={`/trip/${trip.id}`} className="btn details-btn">See More</Link>
+              <p className="trip-budget">
+                Budget: {trip.budget || "N/A"} {trip.budget_currency || ""}
+              </p>
+              {trip.description && (
+                <p className="trip-description">
+                  {trip.description.length > 100
+                    ? `${trip.description.substring(0, 100)}...`
+                    : trip.description}
+                </p>
+              )}
+              <button onClick={() => navigate(`/trip-page/${trip.id}`)} className="view-more-btn">
+                View Details <i className="fas fa-arrow-right"></i>
+              </button>
             </div>
           </div>
         ))}
       </div>
-
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="pagination-container">

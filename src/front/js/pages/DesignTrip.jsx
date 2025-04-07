@@ -29,7 +29,7 @@ export const DesignTrip = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const tripData = {
-      destination,
+      destination: store.selectedTrip,
       start_date: startDate,
       end_date: endDate,
       available_seats: parseInt(availableSeats),
