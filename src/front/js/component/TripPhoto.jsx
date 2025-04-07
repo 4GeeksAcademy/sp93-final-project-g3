@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Cloudinary } from "@cloudinary/url-gen";
+import { AdvancedImage } from "@cloudinary/react";
+import { Resize } from "@cloudinary/url-gen/actions/resize";
 import { useContext } from "react";
+import '../../styles/tripPhoto.css';
 import { Context } from "../store/appContext";
 
-export const UploadImage = () => {
+export const TripPhoto = () => {
   const { actions } = useContext(Context);
   const [imageUrl, setImageUrl] = useState(null);
   const cld = new Cloudinary({
@@ -30,7 +33,7 @@ export const UploadImage = () => {
             if (!error && result && result.event === "success") {
               console.log("Imagen subida con éxito: ", result.info);
               setImageUrl(result.info.secure_url);
-              updateProfilePhoto(result.info.secure_url);
+              updateTripPhoto(result.info.secure_url);
             }
           }
         );
@@ -54,15 +57,15 @@ export const UploadImage = () => {
     }
   }, []);
 
-  const updateProfilePhoto = async (photoUrl) => {
+  const updateTripPhoto = async (photoUrl) => {
     try {
       // Llamar a la acción del contexto para actualizar la foto en el backend
-      const response = await actions.updateProfilePhoto({ photo: photoUrl });
+      const response = await actions.updateTripPhoto({ photo: photoUrl });
       if (response) {
-        console.log("Foto de perfil actualizada con éxito");
+        console.log("Foto de trip actualizada con éxito");
       }
     } catch (error) {
-      console.error("Error al actualizar la foto de perfil", error);
+      console.error("Error al actualizar la foto de trip", error);
     }
   };
 
@@ -78,6 +81,7 @@ export const UploadImage = () => {
       )} */}
       <button id="upload_widget" className="btn edit-photo-btn d-flex align-items-center justify-content-center gap-2 m-auto">
         <i className="fas fa-camera"></i>
+        Edit Photo
       </button>
       {imageUrl && <p className="text img-upload mt-2">¡Imagen subida con éxito!</p>}
     </div>
