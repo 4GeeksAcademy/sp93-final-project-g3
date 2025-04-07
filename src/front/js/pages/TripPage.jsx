@@ -2,12 +2,18 @@ import React, { useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import '../../styles/tripPage.css';
 import { Context } from "../store/appContext";
+import { TripPhoto } from "../component/TripPhoto.jsx";
 
 export const TripPage = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
     const { tripId } = useParams();
     console.log("TripId from URL:", tripId);
+
+    const handleUploadSuccess = (imageUrl) => {
+        actions.updateTripPhoto(imageUrl, tripId)
+      }
+
     useEffect(() => {
         if (tripId) {
             console.log("Fetching trip with ID:", tripId);
@@ -40,17 +46,18 @@ export const TripPage = () => {
                     <div className="row align-items-center">
                         <div className="col-md-5">
                             <img
-                                src={store.trips.image || "https://imgs.search.brave.com/vbj_HDxOJOkTMgvYVE-feghHjfAR2b_lX3ipkxQqzEw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTE4/NzQwNjY0My9lcy9m/b3RvL21hbHRhLWRl/c3Rpbm8tZGUtdmlh/amUtcG9yLWVsLW1l/ZGl0ZXJyJUMzJUEx/bmVvLW1hcnNheGxv/a2stZmlzaGluZy12/aWxsYWdlLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1LXzUy/NTJGVkdyUTNsMG15/QjdqVE12NE50Q1VG/TUhaUWlnclZkWEFq/ZHpNPQ"}
+                                src={store.trips.photo || "https://imgs.search.brave.com/vbj_HDxOJOkTMgvYVE-feghHjfAR2b_lX3ipkxQqzEw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTE4/NzQwNjY0My9lcy9m/b3RvL21hbHRhLWRl/c3Rpbm8tZGUtdmlh/amUtcG9yLWVsLW1l/ZGl0ZXJyJUMzJUEx/bmVvLW1hcnNheGxv/a2stZmlzaGluZy12/aWxsYWdlLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1LXzUy/NTJGVkdyUTNsMG15/QjdqVE12NE50Q1VG/TUhaUWlnclZkWEFq/ZHpNPQ"}
                                 alt="Trip"
                                 className="img-fluid rounded"
                             />
+                            <TripPhoto tripId={tripId} onUploadSuccess={handleUploadSuccess} />
                         </div>
 
                         <div className="col-md-7">
                             <h1 className="h3">{store.trips.destination}</h1>
-                            <h3><span className="insigniaVerde badge">{store.trips.tag || "Tag"}</span></h3>
+                            <h3><span className="insigniaVerde badge">{store.trips.status || "Tag"}</span></h3>
                             <p className="text-success fw-bold">${store.trips.budget || "50"} budget</p>
-                            <p className="text-muted">Destination: {store.trips.destination}</p>
+                            {/* <p className="text-muted">Destination: {store.trips.destination}</p> */}
                             <div className="d-flex mb-3">
                                 <div className="w-50 me-2">
                                     <label className="form-label">Start date</label>

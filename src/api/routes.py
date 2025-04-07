@@ -681,3 +681,27 @@ def update_profile_photo():
     response_body["message"] = "Photo uploaded successfully"
     response_body["results"] = row.serialize()  # Asegúrate de que serialize devuelve la URL de la foto
     return jsonify(response_body), 200
+
+
+@api.route('/trips/<int:trip_id>/photo', methods=['PUT'])
+@jwt_required()
+def update_trip_photo(trip_id):
+    response_body = {}
+    data = request.json  # Recibe los datos JSON del frontend
+    user_id = get_jwt()['user_id']  # Obtiene el user_id del JWT
+    print("soy el data de upload photo", data)
+    print("upload photo user_id", user_id)
+    
+    # Obtén el usuario de la base de datos
+    row = Trips.query.get(trip_id)
+    if not row:
+        response_body['message'] = 'User not found'
+        return jsonify(response_body), 404
+    
+    # Actualiza la foto si existe en los datos
+    row.photo = data.get('photo', row.photo)
+    db.session.commit()
+    
+    response_body["message"] = "Photo uploaded successfully"
+    response_body["results"] = row.serialize()  # Asegúrate de que serialize devuelve la URL de la foto
+    return jsonify(response_body), 200

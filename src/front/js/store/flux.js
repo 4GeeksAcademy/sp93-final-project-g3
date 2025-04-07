@@ -1,3 +1,5 @@
+import { useTransition } from "react";
+
 const getState = ({ getStore, getActions, setStore, useState }) => {
 	return {
 		store: {
@@ -23,6 +25,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			setUser: (newUser) => { setStore({ user: newUser }) },
 			setIsLogged: (value) => { setStore({ isLogged: value }) },
 			setIsAdmin: (value) => { setStore({ isAdmin: value }) },
+			setSelectedTrip: (value) => { setStore({ selectedTrip: value }) },
 			login: async (dataToSend) => {
 				const uri = `${process.env.BACKEND_URL}/api/login`;
 				console.log("uri login", uri);
@@ -251,6 +254,30 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("Trip successfully created", getStore().trips)
 				return data
 			},
+			updateTripPhoto: async (photo, tripId) => {
+				const store = getStore();
+				const trip = store.selectedTrip
+				console.log("soy el console de selected", store.selectedTrip)
+				const uri = `${process.env.BACKEND_URL}/api/trips/${trip.id}/photo`;
+				const token = localStorage.getItem('token');
+				const options = {
+				  method: 'PUT',
+				  headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + token
+				  },
+				  body: JSON.stringify(photo),
+				};
+				const response = await fetch(uri, options);
+				console.log("trip photo updated:", response);
+				if (!response.ok){
+					console.log("error uploading trip photo:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ trips: data.results })
+				console.log("trip photo uploaded successfully", data.results)
+			  },
 			getTrips: async () => {
 				const store = getStore();
 				const uri = `${process.env.BACKEND_URL}/api/trips`;
