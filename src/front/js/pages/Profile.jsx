@@ -5,8 +5,6 @@ import "../../styles/profile.css";
 import { Context } from "../store/appContext";
 import { UploadImage } from "../component/UploadImage.jsx";
 
-//import { AdvancedImage } from "@cloudinary/react";
-
 export const Profile = () => {
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
