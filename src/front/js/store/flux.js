@@ -347,21 +347,12 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					console.log("Unexpected data format:", data);
 				}
 			},
-			searchTrips: async () => {
+			searchTrips: async (criteria) => {
 				const store = getStore();
-				const criteria = store.searchCriteria;
-				const queryParams = new URLSearchParams();
+				// const criteria = store.searchCriteria;
+				console.log(criteria)
 
-				if (criteria.destination) queryParams.append("destination", criteria.destination);
-				if (criteria.startDate) queryParams.append("start_date", criteria.startDate);
-				if (criteria.endDate) queryParams.append("end_date", criteria.endDate);
-				if (criteria.filters?.minAge) queryParams.append("minAge", criteria.filters.minAge);
-				if (criteria.filters?.maxAge) queryParams.append("maxAge", criteria.filters.maxAge);
-				if (criteria.filters?.budget) queryParams.append("budget", criteria.filters.budget);
-				if (criteria.filters?.sortByPrice) queryParams.append("sortByPrice", criteria.filters.sortByPrice);
-
-				const uri = `${process.env.BACKEND_URL}/api/trips/search?${queryParams.toString()}`;
-
+				const uri = `${process.env.BACKEND_URL}/api/trips/search?${criteria}`
 				try {
 					const response = await fetch(uri);
 					if (!response.ok) throw new Error("Error fetching search results");
@@ -382,6 +373,9 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					}
 				});
 				console.log("Search criteria successfully updated", getStore().searchCriteria);
+			},
+			performSearch: () => {
+
 			},
 			getFinishedTrips: async (page = 1) => {
 				try {
