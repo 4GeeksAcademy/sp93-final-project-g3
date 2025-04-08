@@ -65,11 +65,11 @@ export const Profile = () => {
             src={store.user.photo || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
             className="profile-image"
             alt="Profile" />
-            <UploadImage onUploadSuccess={handleUploadSuccess} />
           <h2 className="profile-title">{store.user.first_name} {store.user.last_name}</h2>
+          <UploadImage onUploadSuccess={handleUploadSuccess} />
           {activeTab === "profile" && (
             <button
-              className="edit-profile-btn"
+              className="edit-profile-btn mt-2"
               onClick={() => navigate("/edit-profile")}>
               <i className="fas fa-edit"></i> Edit Profile
             </button>

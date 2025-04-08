@@ -303,6 +303,7 @@ def get_trips():
 @api.route('/trips/search', methods=['GET'])
 def search_trips():
     destination = request.args.get('destination', type=str)
+    print("destino", destination)
     start_date = request.args.get('start_date', type=str)
     end_date = request.args.get('end_date', type=str)
     min_age = request.args.get('minAge', type=int)

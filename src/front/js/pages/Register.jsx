@@ -35,7 +35,6 @@ export const Register = () => {
             password: password
         }
         console.log(dataToSend)
-        //asignar el valor de user para darle la bienvenida
         actions.register(dataToSend);
         navigate('/')
 
