@@ -56,7 +56,7 @@ export const Register = () => {
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="email" className="form-label">Email</label>
-                                <input type="email" className="form-control" id="email" placeholder="Enter your first email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <input type="email" className="form-control" id="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="gender" className="form-label">Gender</label>
