@@ -19,13 +19,15 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			},
 			favorites: [],
 			users: [],
-			selectedTrip: {}
+			selectedTrip: {},
+			selectedUser: {},
 		},
 		actions: {
 			setUser: (newUser) => { setStore({ user: newUser }) },
 			setIsLogged: (value) => { setStore({ isLogged: value }) },
 			setIsAdmin: (value) => { setStore({ isAdmin: value }) },
 			setSelectedTrip: (value) => { setStore({ selectedTrip: value }) },
+			setSelectedUser: (value) => { setStore({ selectedUser: value }) },
 			login: async (dataToSend) => {
 				const uri = `${process.env.BACKEND_URL}/api/login`;
 				console.log("uri login", uri);
@@ -134,6 +136,23 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const data = await response.json();
 				setStore({ users: data.results })
 				console.log("data de get users:", data.results);
+			},
+			getUser: async (userId) => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/users/${userId}`;
+				const options = {
+					method: 'GET',
+					headers: { "Content-Type": "application/json" }, 
+				};
+				const response = await fetch(uri, options);
+				console.log("get user:", response)
+				if (!response.ok) {
+					console.log("error getting selected user:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ user: data.results })
+				console.log("data de get selected user:", data.results);
 			},
 			editProfile: async (profileData) => {
 				const uri = `${process.env.BACKEND_URL}/api/users`;

@@ -20,6 +20,7 @@ import { TripPage } from "./pages/TripPage.jsx";
 import { Community } from "./pages/Community.jsx";
 import { UploadImage } from "./component/UploadImage.jsx";
 import { TripPhoto } from "./component/TripPhoto.jsx";
+import { User } from "./pages/User.jsx";
 
 // Create your first component
 const Layout = () => {
@@ -47,6 +48,7 @@ const Layout = () => {
                         <Route element={<Community />} path="/community/" />
                         <Route element={<UploadImage />} path="/image/" />
                         <Route element={<TripPhoto />} path="/trip-photo/" />
+                        <Route element={<User />} path="/user/:userId" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>
