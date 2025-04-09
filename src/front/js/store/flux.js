@@ -275,7 +275,9 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					return
 				}
 				const data = await response.json();
-				setStore({ trips: data.results })
+				const updatePhotoTrip = data.results
+				setStore({ selectedTrip: data.results })
+				localStorage.setItem('selectedTrip', JSON.stringify(updatePhotoTrip))
 				console.log("trip photo uploaded successfully", data.results)
 			  },
 			getTrips: async () => {
