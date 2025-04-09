@@ -47,6 +47,7 @@ const Layout = () => {
                         <Route element={<Community />} path="/community/" />
                         <Route element={<UploadImage />} path="/image/" />
                         <Route element={<TripPhoto />} path="/trip-photo/" />
+                        
                     </Routes>
                     <Footer />
                 </ScrollToTop>
