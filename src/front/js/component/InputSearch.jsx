@@ -1,13 +1,13 @@
 import React, { useContext, useState } from "react";
 import { LoadScript, Autocomplete } from "@react-google-maps/api";
-import {Context} from "../store/appContext.js"
+import { Context } from "../store/appContext.js"
 
 const libraries = ["places"];
 const API_KEY = process.env.GOOGLE_API_KEY;
 
 export const InputSearch = () => {
     const [autocomplete, setAutocomplete] = useState(null);
-    const {actions} = useContext(Context)
+    const { actions } = useContext(Context)
 
     const onLoad = (autoC) => setAutocomplete(autoC);
 

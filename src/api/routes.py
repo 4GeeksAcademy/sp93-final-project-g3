@@ -31,20 +31,25 @@ def register_user():
 
     email = data.get('email', '').strip().lower()  
     password = data.get('password', '').strip()
+    gender = data.get('gender')
+    date_of_birth = data.get('date_of_birth')
 
-    # Validacion
     if not email or not password:
-        return {"message": "El email y la contraseña son obligatorios"}, 400
+        return {"message": "Email and password are mandatory"}, 400
 
-    # Verificar si el email ya esta registrado
+    if not gender or not date_of_birth:
+        return {'message': "Gender and date of birth are mandatory"}
+
     if Users.query.filter_by(email=email).first():
-        return {"message": "El email ya está registrado"}, 409
+        return {"message": "Email is already registered"}, 409
     
-
-    row = Users(email=email,
-                password=password,
-                first_name=data.get('first_name', None),
-                last_name=data.get('last_name', None))
+    row = Users(
+        email=email,
+        password=password,
+        first_name=data.get('first_name', None),
+        last_name=data.get('last_name', None),
+        gender=gender,
+        date_of_birth=date_of_birth)
     db.session.add(row)
     db.session.commit()
 
