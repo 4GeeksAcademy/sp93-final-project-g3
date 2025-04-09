@@ -21,6 +21,8 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			users: [],
 			selectedTrip: {},
 			selectedUser: {},
+			requests: [],
+			hostRequests: []
 		},
 		actions: {
 			setUser: (newUser) => { setStore({ user: newUser }) },
@@ -142,7 +144,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const uri = `${process.env.BACKEND_URL}/api/users/${userId}`;
 				const options = {
 					method: 'GET',
-					headers: { "Content-Type": "application/json" }, 
+					headers: { "Content-Type": "application/json" },
 				};
 				const response = await fetch(uri, options);
 				console.log("get user:", response)
@@ -401,10 +403,15 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					const data = await response.json();
 					console.log("Search Results:", data.results);
 
-					setStore({ searchResults: data.results });
+					setStore({
+						searchResults: data.results,
+					});
 				} catch (error) {
 					console.error("Error during searchTrips:", error);
 				}
+			},
+			clearSearchResults: () => {
+				setStore({ searchResults: [] });
 			},
 			updateSearchCriteria: (newCriteria) => {
 				const store = getStore();
@@ -415,9 +422,6 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					}
 				});
 				console.log("Search criteria successfully updated", getStore().searchCriteria);
-			},
-			performSearch: () => {
-
 			},
 			getFinishedTrips: async (page = 1) => {
 				try {
@@ -500,7 +504,139 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("trip added to favs:", data);
 				getActions().getFavoriteTrips()
 				console.log(data);
-			}
+			},
+			joinTrip: async (tripId) => {
+				const store = getStore();
+				const token = localStorage.getItem("token");
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/join`;
+				if (!token) throw new Error("No token found");
+				const options = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+					body: JSON.stringify({ trip_id: tripId })
+				}
+				const response = await fetch(uri, options)
+				if (!response.ok) {
+					console.log("Error sending your request to join:", response)
+					return
+				}
+				const data = await response.json();
+				console.log("your request to join has been sent:", data);
+				getActions().getRequests()
+				console.log(data);
+			},
+			leaveTrip: async (tripId) => {
+				const store = getStore();
+				const token = localStorage.getItem("token");
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/leave`;
+				if (!token) throw new Error("No token found");
+
+				const options = {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					}
+				}
+				const response = await fetch(uri, options)
+				if (!response.ok) {
+					console.log("Error leaving trip", response)
+					return
+				}
+				const data = await response.json();
+				console.log("you have left the trip:", data);
+				getActions().getRequests()
+				console.log(data);
+			},
+			approveTraveler: async (tripId, travelerId, dataToSend) => {
+				const store = getStore();
+				const token = localStorage.getItem('token');
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/travelers/${travelerId}/approve`;
+				const options = {
+					method: 'PUT',
+					headers: {
+						"Content-Type": 'application/json',
+						"Authorization": "Bearer " + token
+					},
+					body: JSON.stringify(dataToSend)
+				}
+				console.log("uri", uri)
+				const response = await fetch(uri, options)
+				if (!response.ok) {
+					console.log(response.status)
+					return
+				}
+				const data = await response.json()
+				console.log("traveler approved", data);
+				getActions().getHostRequests()
+			},
+			declineTraveler: async (tripId, travelerId, dataToSend) => {
+				const store = getStore();
+				const token = localStorage.getItem('token');
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/travelers/${travelerId}/decline`;
+				const options = {
+					method: 'PUT',
+					headers: {
+						"Content-Type": 'application/json',
+						"Authorization": "Bearer " + token
+					},
+					body: JSON.stringify(dataToSend)
+				}
+				console.log("uri", uri)
+				const response = await fetch(uri, options)
+				if (!response.ok) {
+					console.log(response.status)
+					return
+				}
+				const data = await response.json()
+				console.log("traveler declined", data);
+				getActions().getHostRequests()
+			},
+			getHostRequests: async () => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/trips/requests/host`;
+				const token = localStorage.getItem("token");
+				const options = {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+				};
+				const response = await fetch(uri, options);
+				console.log("get host requests:", response)
+				if (!response.ok) {
+					console.log("error getting host requests:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ hostRequests: data.results })
+				console.log("data de get host requests:", data.results);
+			},
+			getRequests: async () => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/trips/requests`;
+				const token = localStorage.getItem("token");
+				const options = {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					},
+				};
+				const response = await fetch(uri, options);
+				console.log("get requests:", response)
+				if (!response.ok) {
+					console.log("error requests:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ requests: data.results })
+				console.log("data de get requests:", data.results);
+			},
 
 		}
 	};

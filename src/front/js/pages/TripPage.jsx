@@ -8,16 +8,25 @@ export const TripPage = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
     const { tripId } = useParams();
-    console.log("TripId from URL:", tripId);
-
+    const { requests } = store;
+    console.log("requests:",requests)
     const handleUploadSuccess = (imageUrl) => {
         actions.updateTripPhoto(imageUrl, tripId)
-      }
+    };
+
+    const handleLeaveTrip = () => {
+        actions.leaveTrip(tripId)
+    };
+
+    const handleJoinTrip = () => {
+        actions.joinTrip(tripId)
+    };
 
     useEffect(() => {
         if (tripId) {
             console.log("Fetching trip with ID:", tripId);
             actions.getTrip(tripId);
+            actions.getRequests();
         }
     }, [tripId]);
 
@@ -78,8 +87,15 @@ export const TripPage = () => {
                                     />
                                 </div>
                             </div>
-
-                            <button className="btn btn-dark w-100">Join the adventure</button>
+                            {store.requests.find(request => request.id.toString() === tripId) ? (
+                                <button className="travelers-btn" onClick={handleLeaveTrip} title="Leave trip">
+                                Leave trip
+                                </button>
+                            ) : (
+                                <button className="travelers-btn" onClick={handleJoinTrip} title="Join trip">
+                                Join the adventure
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

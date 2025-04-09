@@ -135,7 +135,17 @@ class Travelers(db.Model):
     def serialize(self):
         return {'id': self.id,
             'trip_id': self.trip_id,
+            'trip': {
+                'id': self.trip_to.id,
+                'destination': self.trip_to.destination,
+                'start_date': self.trip_to.start_date.strftime("%d %m %y")
+            },
             'traveler_id': self.traveler_id,
+            'traveler': {
+                'id': self.traveler_to.id,
+                'first_name': self.traveler_to.first_name,
+                'photo': self.traveler_to.photo
+            },
             'authorization': self.authorization, 
             'created_at': self.created_at.strftime("%d %m %y")}
 
