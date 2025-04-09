@@ -123,7 +123,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const uri = `${process.env.BACKEND_URL}/api/users`;
 				const options = {
 					method: 'GET',
-					headers: { "Content-Type": "application/json" }, 
+					headers: { "Content-Type": "application/json" },
 				};
 				const response = await fetch(uri, options);
 				console.log("get users:", response)
@@ -184,40 +184,40 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const uri = `${process.env.BACKEND_URL}/api/user/photo`;
 				const token = localStorage.getItem('token');
 				const options = {
-				  method: 'PUT',
-				  headers: {
-					"Content-Type": "application/json",
-					"Authorization": `Bearer ${token}`,
-				  },
-				  body: JSON.stringify(photo),
+					method: 'PUT',
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${token}`,
+					},
+					body: JSON.stringify(photo),
 				};
 				try {
-				  const response = await fetch(uri, options);
-				  const data = await response.json();
-				  console.log("Response data update photo:", data);
-				  if (!response.ok) {
-					console.error("Error details:", {
-					  status: response.status,
-					  statusText: response.statusText,
-					  errorData: data,
+					const response = await fetch(uri, options);
+					const data = await response.json();
+					console.log("Response data update photo:", data);
+					if (!response.ok) {
+						console.error("Error details:", {
+							status: response.status,
+							statusText: response.statusText,
+							errorData: data,
+						});
+						throw new Error(data.message || 'Failed to update photo');
+					}
+					const updatedUser = data.results;
+					setStore({
+						user: updatedUser, // Actualiza el estado global del usuario
 					});
-					throw new Error(data.message || 'Failed to update photo');
-				  }
-				  const updatedUser = data.results;
-				  setStore({
-					user: updatedUser, // Actualiza el estado global del usuario
-				  });
-				  localStorage.setItem('user', JSON.stringify(updatedUser)); // Guarda la información en localStorage
-				  return true;
+					localStorage.setItem('user', JSON.stringify(updatedUser)); // Guarda la información en localStorage
+					return true;
 				} catch (error) {
-				  console.error('Error updating profile:', {
-					error: error,
-					photo: photo,
-					token: token,
-				  });
-				  throw error;
+					console.error('Error updating profile:', {
+						error: error,
+						photo: photo,
+						token: token,
+					});
+					throw error;
 				}
-			  },
+			},
 			getMessage: async () => {
 				const uri = `${process.env.BACKEND_URL}/api/hello`
 				const response = await fetch(uri)
@@ -254,38 +254,59 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("Trip successfully created", getStore().trips)
 				return data
 			},
-			updateTripPhoto: async (photo, tripId) => {
-				const store = getStore();
-				const trip = store.selectedTrip
-				console.log("soy el console de selected", store.selectedTrip)
-				const uri = `${process.env.BACKEND_URL}/api/trips/${trip.id}/photo`;
+			updateTripPhoto: async (photoData) => {
+				// Extraer el ID del viaje y la URL de la foto
+				const { photoUrl, tripId } = photoData;
+
+				console.log("Actualizando foto para el viaje ID:", tripId);
+				console.log("URL de la nueva foto:", photoUrl);
+
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}`;
 				const token = localStorage.getItem('token');
 				const options = {
-				  method: 'PUT',
-				  headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + token
-				  },
-				  body: JSON.stringify(photo),
+					method: 'PUT',
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${token}`,
+					},
+					body: JSON.stringify({ photo: photoUrl }),
 				};
-				const response = await fetch(uri, options);
-				console.log("trip photo updated:", response);
-				if (!response.ok){
-					console.log("error uploading trip photo:", response);
-					return
+				try {
+					const response = await fetch(uri, options);
+					const data = await response.json();
+					console.log("Response data update trip photo:", data);
+					if (!response.ok) {
+						console.error("Error details:", {
+							status: response.status,
+							statusText: response.statusText,
+							errorData: data,
+						});
+						throw new Error(data.message || 'Failed to update photo');
+					}
+
+					// Actualizar el viaje seleccionado con los datos recibidos
+					const updatedTrip = data.results;
+					setStore({
+						selectedTrip: updatedTrip,
+						trips: updatedTrip
+					});
+
+					console.log("Trip actualizado en el store:", updatedTrip);
+					return true;
+				} catch (error) {
+					console.error('Error updating trip photo:', {
+						error: error,
+						photoData: photoData,
+					});
+					throw error;
 				}
-				const data = await response.json();
-				const updatePhotoTrip = data.results
-				setStore({ selectedTrip: data.results })
-				localStorage.setItem('selectedTrip', JSON.stringify(updatePhotoTrip))
-				console.log("trip photo uploaded successfully", data.results)
-			  },
+			},
 			getTrips: async () => {
 				const store = getStore();
 				const uri = `${process.env.BACKEND_URL}/api/trips`;
 				const options = {
 					method: 'GET',
-					headers: { "Content-Type": "application/json" }, 
+					headers: { "Content-Type": "application/json" },
 				};
 				const response = await fetch(uri, options);
 				console.log("get trips:", response)
