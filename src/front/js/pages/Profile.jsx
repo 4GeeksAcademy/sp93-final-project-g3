@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import "../../styles/profile.css";
 import { Context } from "../store/appContext";
 import { UploadImage } from "../component/UploadImage.jsx";
@@ -11,7 +10,7 @@ export const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile"); // Estado para controlar la pestaña activa
   const { totalPages, currentPage, favorites, myTrips } = store;
   const { getFavoriteTrips, getMyTrips } = actions;
-  const currentUserId = store.user?.id;
+  // const currentUserId = store.user?.id;
 
   const handleUploadSuccess = (imageUrl) => {
     actions.updateProfilePhoto(imageUrl)
@@ -63,7 +62,7 @@ export const Profile = () => {
       <div className="profile-card">
         <div className="profile-header">
           <img
-            src={store.user.photo || "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI="}
+            src={store.user.photo || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
             className="profile-image"
             alt="Profile" />
           <h2 className="profile-title">{store.user.first_name} {store.user.last_name}</h2>
