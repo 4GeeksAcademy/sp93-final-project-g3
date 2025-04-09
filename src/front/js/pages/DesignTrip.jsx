@@ -24,7 +24,7 @@ export const DesignTrip = () => {
   const handlePlaceSelected = (place) => {
     const dest = place.formatted_address || place.name;
     setDestination(dest);
-  };
+  }; 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
