@@ -301,6 +301,25 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					throw error;
 				}
 			},
+			updateTrip: async (tripId, data) => {
+				try {
+					const token = localStorage.getItem('token');
+					const response = await fetch(`${process.env.BACKEND_URL}/api/trips/${tripId}`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Bearer ${token}`
+						},
+						body: JSON.stringify(data)
+					});
+
+					if (!response.ok) throw new Error('Failed to update trip');
+					return await response.json();
+				} catch (error) {
+					console.error("Error updating trip:", error);
+					throw error;
+				}
+			},
 			getTrips: async () => {
 				const store = getStore();
 				const uri = `${process.env.BACKEND_URL}/api/trips`;
