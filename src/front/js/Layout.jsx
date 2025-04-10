@@ -17,6 +17,7 @@ import { EditProfile } from "./pages/EditProfile.jsx";
 import { Profile } from "./pages/Profile.jsx";
 import { GetInspired } from "./pages/GetInspired.jsx";
 import { TripPage } from "./pages/TripPage.jsx";
+import { EditTrip } from "./pages/EditTrip.jsx";
 import { Community } from "./pages/Community.jsx";
 import { UploadImage } from "./component/UploadImage.jsx";
 import { TripPhoto } from "./component/TripPhoto.jsx";
@@ -46,6 +47,7 @@ const Layout = () => {
                         <Route element={<DesignTrip />} path="/design-trip/" />
                         <Route element={<GetInspired />} path="/get-inspired/" />
                         <Route element={<TripPage />} path="/trip-page/:tripId" />
+                        <Route element={<EditTrip />} path="/edit-trip/:tripId" />
                         <Route element={<Community />} path="/community/" />
                         <Route element={<UploadImage />} path="/image/" />
                         <Route element={<TripPhoto />} path="/trip-photo/" />

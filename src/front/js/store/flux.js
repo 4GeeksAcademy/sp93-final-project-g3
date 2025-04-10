@@ -381,34 +381,22 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("data de get my trips", data.mytrips);
 			},
 			getTrip: async (tripId) => {
+				const store = getStore();
 				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}`;
-				const token = localStorage.getItem("token");
 				const options = {
 					method: "GET",
 					headers: {
-						"Content-Type": "application/json",
-						"Authorization": "Bearer " + token
-					},
-
+						"Content-Type": "application/json"},
 				};
 				const response = await fetch(uri, options);
 				console.log("getTrip response:", response);
-
 				if (!response.ok) {
-					console.log(`Error getting trip ${tripId}:`, response);
-					setStore({ trips: null });
+					console.log("Error getting trip ${tripId}:", response);
 					return;
 				}
-
 				const data = await response.json();
-				console.log("Data received from API:", data);
-
-				if (data && data.results) {
-					setStore({ trips: data.results });
-					console.log("Store updated with:", getStore().trips);
-				} else {
-					console.log("Unexpected data format:", data);
-				}
+				setStore({ selectedTrip: data.results})
+				console.log("get trip:", data)
 			},
 			searchTrips: async (criteria) => {
 				const store = getStore();
