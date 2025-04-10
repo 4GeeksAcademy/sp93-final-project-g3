@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { InputSearch } from "../component/InputSearch.jsx";
 import { Context } from "../store/appContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,17 +6,43 @@ import "../../styles/find.css";
 
 export const Find = () => {
   const { store, actions } = useContext(Context);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { searchTrips } = actions;
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-
   const [localFilters, setLocalFilters] = useState({
     minAge: "",
     maxAge: "",
     budget: "",
     sortByPrice: "",
   });
+
+  useEffect(() => {
+    // Limpiar criterios anteriores de búsqueda y resultados
+    actions.updateSearchCriteria({
+      destination: "",
+      start_date: "",
+      end_date: "",
+      filters: {
+        minAge: "",
+        maxAge: "",
+        budget: "",
+        sortByPrice: "",
+      },
+    });
+  
+    actions.clearSearchResults(); // Asegúrate de tener una acción que borre los resultados
+  
+    setStartDate("");
+    setEndDate("");
+    setLocalFilters({
+      minAge: "",
+      maxAge: "",
+      budget: "",
+      sortByPrice: "",
+    });
+  }, []);
 
   const [page, setPage] = useState(1);
   const resultsPerPage = 10;
@@ -129,12 +155,13 @@ export const Find = () => {
           </div>
         )}
       </form>
-      <div className="trip-cards-section">
+      <div className="trip-cards-container">
         {paginatedResults.map((trip, index) => (
           <div className="trip-card" key={index}>
-            <img src={trip.photo} className="trip-image" />
-            <div className="trip-destination">
+            <img src={trip.photo} className="trip-card-image" />
+            <div className="trip-card-content">
               <h3 className="trip-destination">{trip.destination}</h3>
+              <p><span className="insigniaVerde badge">{trip.status || "Tag"}</span></p>
               <p className="trip-dates">
                 Start date: {trip.start_date || trip.startDate}
                 End date: {trip.end_date || trip.endDate}

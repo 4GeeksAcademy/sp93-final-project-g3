@@ -3,6 +3,7 @@ import { InputSearch } from "../component/InputSearch.jsx";
 import { Context } from "../store/appContext";
 import "../../styles/designTrip.css";
 import { useNavigate } from "react-router-dom";
+import { TripPhoto } from "../component/TripPhoto.jsx";
 
 
 export const DesignTrip = () => {
@@ -24,7 +25,10 @@ export const DesignTrip = () => {
   const handlePlaceSelected = (place) => {
     const dest = place.formatted_address || place.name;
     setDestination(dest);
-  }; 
+  };
+  const handleUploadSuccess = (imageUrl) => {
+    setPhoto(imageUrl)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +38,7 @@ export const DesignTrip = () => {
       end_date: endDate,
       available_seats: parseInt(availableSeats),
       description,
-      photo,
+      photo: store.selectedTrip,
       budget: parseFloat(budget),
       budget_currency: budgetCurrency,
       age_min: ageMin ? parseInt(ageMin) : null,
@@ -116,13 +120,8 @@ export const DesignTrip = () => {
         {/* Photo URL */}
         <div className="mb-3">
           <label className="form-label">Photo URL</label>
-          <input
-            type="text"
-            className="form-control custom-input"
-            placeholder="Enter photo URL"
-            value={photo}
-            onChange={(e) => setPhoto(e.target.value)}
-          />
+          Upload your photo
+          <TripPhoto onUploadSuccess={handleUploadSuccess} />
         </div>
 
         {/* Budget */}

@@ -4,13 +4,14 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from api.models import db, Users, Trips, Travelers, Favorites
+from api.models import db, Users, Trips, Travelers, Favorites, Notifications
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import get_jwt
 from sqlalchemy.orm import aliased
 from datetime import datetime
+from datetime import timedelta
 import requests
 
 api = Blueprint('api', __name__)
@@ -59,7 +60,7 @@ def register_user():
 
     print(claims)
 
-    access_token = create_access_token(identity=user["email"], additional_claims=claims)
+    access_token = create_access_token(identity=user["email"], expires_delta=timedelta(hours=1), additional_claims=claims)
     response_body['message'] = 'User registered successfully'
     response_body['access_token'] = access_token
     response_body['results'] = user
@@ -153,6 +154,7 @@ def edit_user():
     response_body['results'] = user.serialize()
     return response_body, 200
 
+
 @api.route('/users/password', methods=['PUT'])
 @jwt_required()
 def update_password():
@@ -176,6 +178,7 @@ def update_password():
     
     response_body['message'] = 'Contraseña actualizada'
     return response_body, 200
+
 
 # PUT /trips/{id} → Editar un viaje (solo anfitrión del viaje)
 @api.route('/trips/<int:trip_id>', methods=['PUT'])
@@ -350,7 +353,7 @@ def get_finished_trips():
     }), 200
 
 
-# GET /mytrips - busqueda de los viajes del usuario logeado
+# GET /mytrips - los viajes del usuario logeado
 @api.route('/user/mytrips', methods=['GET'])
 @jwt_required()
 def get_my_trips():
@@ -414,8 +417,8 @@ def delete_trip(trip_id): #3
     }
     return jsonify(response_body), 200
 
-
-@api.route('/trips/<int:trip_id>/travelers', methods=['POST'])
+# POST /trips/{id}/JOIN → User request to join a trip
+@api.route('/trips/<int:trip_id>/join', methods=['POST'])
 @jwt_required()
 def join_trip(trip_id):
     response_body = {}
@@ -445,8 +448,35 @@ def join_trip(trip_id):
     response_body["results"] = row.serialize()
 
     return response_body, 200
-    
 
+# GET /trips/requests/host → User request to join a trip
+@api.route('/trips/requests/host', methods=['GET'])
+@jwt_required()
+def get_host_requests():
+    user_id = get_jwt()['user_id']
+
+    # Buscar los viajes donde el user_id es el host
+    trips_hosted = Trips.query.filter_by(host_id=user_id).all()
+
+    if not trips_hosted:
+        return jsonify({'message': "The host does not have trips"}), 404
+
+    # Recoger todos los requests pendientes para esos viajes
+    pending_requests = []
+    for trip in trips_hosted:
+        requests = Travelers.query.filter_by(trip_id=trip.id, authorization="pending").all()
+        pending_requests.extend(requests)
+
+    if not pending_requests:
+        return jsonify({'message': "No pending requests for your trips"}), 404
+
+    return jsonify({
+        "message": "Pending requests retrieved successfully",
+        "results": [request.serialize() for request in pending_requests]
+    }), 200
+
+
+# PUT/trips/{id}/travelers/traveler.id/approve → Host approves a traveler
 @api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/approve', methods=['PUT'])
 @jwt_required()
 def approve_traveler(trip_id, traveler_id):
@@ -476,7 +506,7 @@ def approve_traveler(trip_id, traveler_id):
     response_body['results'] = traveler_request.serialize()
     return response_body, 200
 
-
+# PUT/trips/{id}/travelers/traveler.id/decline → Host Declines a traveler
 @api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/decline', methods=['PUT'])
 @jwt_required()
 def decline_traveler(trip_id, traveler_id):
@@ -508,6 +538,7 @@ def decline_traveler(trip_id, traveler_id):
     return response_body, 200
 
 
+# DELETE /trips/{id}/travelers/traveler.id/remove → Host deletes a traveler
 @api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/remove', methods=['DELETE'])
 @jwt_required()
 def remove_traveler(trip_id, traveler_id):
@@ -535,7 +566,7 @@ def remove_traveler(trip_id, traveler_id):
     response_body['results'] = traveler_request.serialize()
     return response_body, 200
 
-
+# GET /trips/{id}/travelers → list of the travelers of a trip
 @api.route('/trips/<int:trip_id>/travelers', methods=['GET'])
 @jwt_required()
 def get_trip_travelers(trip_id):
@@ -567,7 +598,7 @@ def get_trip_travelers(trip_id):
     response_body['results'] = travelers_list
     return response_body, 200
 
-
+# DELETE /trips/{id}/leave → User leaves a trip
 @api.route('/trips/<int:trip_id>/leave', methods=['DELETE'])
 @jwt_required()
 def leave_trip(trip_id):
@@ -601,6 +632,30 @@ def leave_trip(trip_id):
     response_body['message'] = "Cannot leave the trip in the current state"
     return response_body, 400
 
+@api.route('/trips/requests', methods=['GET'])
+@jwt_required()
+def get_my_requests():
+    user_id = get_jwt()['user_id']
+
+    requests = Travelers.query.filter_by(traveler_id=user_id).all()
+
+    if not requests:
+        return jsonify({
+            "message": "No requests found",
+            "results": []
+        }), 200
+
+    results = []
+    for r in requests:
+        trip = Trips.query.get(r.trip_id)
+        trip_data = trip.serialize()
+        trip_data["authorization"] = r.authorization
+        results.append(trip_data)
+
+    return jsonify({
+        "message": "User requests retrieved successfully",
+        "results": results
+    }), 200
 
 @api.route('/trips/<int:trip_id>/favorites', methods=['POST', 'DELETE'])
 @jwt_required()
@@ -711,6 +766,13 @@ def update_trip_photo(trip_id):
     response_body["message"] = "Photo uploaded successfully"
     response_body["results"] = row.serialize()  # Asegúrate de que serialize devuelve la URL de la foto
     return jsonify(response_body), 200
+
+@api.route("/api/notifications", methods=["GET"])
+@jwt_required()
+def get_notifications():
+    current_user_id = get_jwt_identity()
+    notifications = Notifications.query.filter_by(user_id=current_user_id).order_by(Notifications.date.desc()).all()
+    return jsonify([n.serialize() for n in notifications]), 200
 
 
 @api.route('/api/my-requests', methods=["GET"])
