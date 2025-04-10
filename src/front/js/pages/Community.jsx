@@ -2,11 +2,17 @@ import React, { useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
 import "../../styles/getInspired.css";
+import { useNavigate } from "react-router-dom";
 
 export const Community = () => {
   const { store, actions } = useContext(Context);
-  const { totalPages, currentPage, users, user } = store;
+  const { totalPages, currentPage, users, user, selectedUser } = store;
   const { getUsers } = actions;
+  const navigate = useNavigate();
+  const handleSelectedUser = (user) => {
+    actions.setSelectedUser(user)
+    navigate(`/user/${user.id}`)
+  }
 
   const currentUserId = user?.id;
 
@@ -77,9 +83,9 @@ export const Community = () => {
                       </p>
                     )}
                   </div>
-                  <Link to={`/user/${user.id}`} className="view-more-btn">
-                    View Profile <i className="fas fa-arrow-right"></i>
-                  </Link>
+                  <button onClick={() => handleSelectedUser(user)} className="view-more-btn">
+                  View Profile <i className="fas fa-arrow-right"></i>
+                </button>
                 </div>
               </div>
             ))}

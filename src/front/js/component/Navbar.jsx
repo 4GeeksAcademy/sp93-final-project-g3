@@ -67,20 +67,12 @@ export const Navbar = () => {
 											Logout
 										</span>
 							
-								<button id="btnGroupDrop1" type="button" className="btn btn-heart dropdown-toggle me-2" data-bs-toggle="dropdown" aria-expanded="false">
+								<button id="btnGroupDrop1" type="button" className="btn btn-heart me-2" data-bs-toggle="dropdown" aria-expanded="false" >
 									<i className="fas fa-heart"></i>
 								</button>
-								<ul className="dropdown-menu dropdown-menu-end p-2" aria-labelledby="btnGroupDrop1">
-									{store.favorites.length === 0 ? (
-										<li className="disabled px-2"> No favorites </li>) : (
-										store.favorites.map((item) => (
-											<li key={item.id} className="dropdown-item d-flex justify-content-between align-items-center">
-												<span>{item.destination}</span>
-												<i className="fa fa-trash text-danger pointer px-2" onClick={() => { actions.removeFavorite(item) }}></i>
-											</li>
-										)
-										))}
-								</ul>
+								<button id="btnGroupDrop1" type="button" className="btn btn-bell me-2" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => navigate("/notifications")}>
+									<i className="fas fa-bell"></i>
+								</button>
 							</div>
 						) : (
 							<ul className="navbar-nav me-auto mb-2 mb-lg-0">
