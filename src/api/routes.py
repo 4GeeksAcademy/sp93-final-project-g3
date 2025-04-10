@@ -711,3 +711,37 @@ def update_trip_photo(trip_id):
     response_body["message"] = "Photo uploaded successfully"
     response_body["results"] = row.serialize()  # Asegúrate de que serialize devuelve la URL de la foto
     return jsonify(response_body), 200
+
+
+@api.route('/api/my-requests', methods=["GET"])
+@jwt_required()
+def get_my_requests():
+    user_id = get_jwt()['user_id']  # Obtiene el user_id del JWT
+
+    my_requests = Travelers.query \
+        .filter_by(traveler_id=user_id) \
+        .join(Trips, Travelers.trip_id == Trips.id) \
+        .join(Users, Trips.host_id == Users.id) \
+        .all()
+
+    result = []
+    for r in my_requests:
+        result.append({
+            "id": r.id,
+            "authorization": r.authorization,
+            "created_at": r.created_at.strftime("%d %m %y"),
+            "trip": {
+                "id": r.trip_to.id,
+                "destination": r.trip_to.destination,
+                "start_date": r.trip_to.start_date.strftime("%d %m %y") if r.trip_to.start_date else None,
+                "end_date": r.trip_to.end_date.strftime("%d %m %y") if r.trip_to.end_date else None,
+                "host": {
+                    "id": r.trip_to.host.id,
+                    "first_name": r.trip_to.host.first_name,
+                    "last_name": r.trip_to.host.last_name,
+                    "email": r.trip_to.host.email
+                }
+            }
+        })
+
+    return jsonify(result), 200

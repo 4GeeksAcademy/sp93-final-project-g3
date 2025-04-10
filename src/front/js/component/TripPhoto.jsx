@@ -34,7 +34,7 @@ export const TripPhoto = ({ tripId }) => {
             croppingAspectRatio: 1,
             croppingDefaultSelectionRatio: 1,
             showSkipCropButton: false,
-            sources: ["local", "camera"],
+            sources: ["local", "camera", "url", "facebook", "google_drive", "dropbox", "instagram"],
             multiple: false,
           },
           (error, result) => {

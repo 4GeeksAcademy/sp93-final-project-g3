@@ -9,20 +9,26 @@ export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [viewPassword, setViewPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null)
     const navigate = useNavigate()
 
     const handleEmail = (event) => { setEmail(event.target.value) }
     const handlePassword = (event) => { setPassword(event.target.value) }
     const handleViewPassword = () => { setViewPassword(!viewPassword) }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const dataToSend = { email, password }
-        console.log(dataToSend)
-        //asignar el valor de user para darle la bienvenida
-        actions.login(dataToSend);
+        const success = await actions.login(dataToSend)
 
-        navigate('/')
+        if (success) {
+            navigate("/")
+        } else {
+            setErrorMessage("Email or password is incorrect.")
+        }
+        //actions.login(dataToSend);
+
+        //navigate('/')
         // cambien el valor del btn login a logout del navbar
     }
 
@@ -40,6 +46,11 @@ export const Login = () => {
                 <p className="subtitle text-center" style={{ color: "#FF5942" }}>
                     Discover your next adventure
                 </p>
+                {errorMessage && (
+                    <div className="alert alert-danger text-center" role="alert">
+                        {errorMessage}
+                    </div>
+                )}
                 {/* Username / Email */}
                 <div className="mb-3">
                     <label htmlFor="emailInput" className="form-label">Email address</label>

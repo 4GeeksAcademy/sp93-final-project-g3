@@ -9,7 +9,9 @@ export const Profile = () => {
   const { store, actions } = useContext(Context);
   const [activeTab, setActiveTab] = useState("profile"); // Estado para controlar la pestaña activa
   const { totalPages, currentPage, favorites, myTrips } = store;
-  const { getFavoriteTrips, getMyTrips } = actions;
+  const { getFavoriteTrips, getMyTrips, getMyRequests } = actions;
+  const { myRequests = [] } = store
+  //const myRequests = store.myRequests;
   // const currentUserId = store.user?.id;
 
   const handleUploadSuccess = (imageUrl) => {
@@ -22,7 +24,8 @@ export const Profile = () => {
 
   useEffect(() => {
     getMyTrips(1);
-    getFavoriteTrips(1); // Default to page 1
+    getFavoriteTrips(1);
+    getMyRequests() // Default to page 1
   }, [getMyTrips, getFavoriteTrips]);
 
   const handlePagination = (page) => {
@@ -34,19 +37,11 @@ export const Profile = () => {
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
 
-    // Separar los valores de la fecha
     const parts = dateString.split(" ");
     if (parts.length !== 3) return "Invalid Date";
-
     let [day, month, year] = parts;
-
-    // Asegurar que el año tiene 4 dígitos (asumimos que "25" es 2025)
     year = parseInt(year, 10) < 100 ? `20${year}` : year;
-
-    // Crear la fecha en formato estándar YYYY-MM-DD
     const formattedDate = `${year}-${month}-${day}`;
-
-    // Convertir a objeto Date y formatear en texto legible
     const date = new Date(formattedDate);
     if (isNaN(date.getTime())) return "Invalid Date";
 
@@ -56,6 +51,7 @@ export const Profile = () => {
       day: "numeric",
     });
   };
+  console.log("Mis solicitudes de viaje:", myRequests);
 
   return (
     <div className="profile-container">
@@ -97,6 +93,13 @@ export const Profile = () => {
               onClick={() => handleTabChange("favorites")}
               type="button">
               My Favorites
+            </button>
+            <button
+              className={`nav-link ${activeTab === "requests" ? "active" : ""}`}
+              id="requests-tab"
+              onClick={() => handleTabChange("requests")}
+              type="button">
+              My requests
             </button>
           </div>
         </nav>
@@ -325,6 +328,35 @@ export const Profile = () => {
                 >
                   Next &raquo;
                 </button>
+              </div>
+            )}
+          </div>
+
+          <div className={`tab-pane ${activeTab === "requests" ? "show active" : "fade"}`}
+            id="requests"
+            role="tabpanel"
+            aria-labelledby="requests-tab">
+            {!myRequests || myRequests.length === 0 ? (
+              <div className="no-trips-message">
+                <p>You haven't sent any trip requests yet.</p>
+              </div>
+            ) : (
+              <div className="trip-cards-container">
+                {myRequests.map((req, index) => {
+                  console.log("Individual request:", req);
+                  return (
+                    <div key={index} className="trip-card">
+                      <div className="trip-card-content">
+                        <h3>{req.trip?.destination}</h3>
+                        <p>Status: <strong>{req.authorization}</strong></p>
+                        <p>Host: {req.trip?.host?.first_name} {req.trip?.host?.last_name}</p>
+                        <button onClick={() => navigate(`/trip-page/${req.trip?.id}`)} className="view-more-btn">
+                          View Trip <i className="fas fa-arrow-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
