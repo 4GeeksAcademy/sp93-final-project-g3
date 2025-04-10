@@ -389,7 +389,8 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const options = {
 					method: "GET",
 					headers: {
-						"Content-Type": "application/json"},
+						"Content-Type": "application/json"
+					},
 				};
 				const response = await fetch(uri, options);
 				console.log("getTrip response:", response);
@@ -398,7 +399,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					return;
 				}
 				const data = await response.json();
-				setStore({ selectedTrip: data.results})
+				setStore({ selectedTrip: data.results })
 				console.log("get trip:", data)
 			},
 			searchTrips: async (criteria) => {
@@ -647,45 +648,30 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				setStore({ requests: data.results })
 				console.log("data de get requests:", data.results);
 			},
-			},
-			getMyRequests: async (page = 1) => {
-				const store = getStore();
-				const uri = `${process.env.BACKEND_URL}/api/my-requests?page=${page}`;
-				const token = localStorage.getItem("token");
-				try {
-				  const response = await fetch(uri, {
+		},
+		/* getMyRequests: async (page = 1) => {
+			const store = getStore();
+			const uri = `${process.env.BACKEND_URL}/api/my-requests?page=${page}`;
+			const token = localStorage.getItem("token");
+			try {
+				const response = await fetch(uri, {
 					method: "GET",
 					headers: {
-					  "Content-Type": "application/json",
-					  "Authorization": "Bearer " + token
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
 					}
-				  });
-				  if (!response.ok) {
+				});
+				if (!response.ok) {
 					console.log("error getting requests:", response);
 					return;
-				  }
-				  const data = await response.json();
-				  console.log("data recibida:", data);
-				  setStore({ myRequests: data }); // Aquí guardamos el array directamente
-				} catch (err) {
-				  console.error("Error loading my requests:", err);
 				}
-			  }
-
-				  /* const resp = await fetch(process.env.BACKEND_URL + "/api/my-requests", {
-					headers: {
-					  Authorization: "Bearer " + localStorage.getItem("token")
-					}
-				  });
-				  if (!resp.ok) throw new Error("Failed to fetch requests");
-				  const data = await resp.json();
-				  setStore({ myRequests: data.requests });
-				} catch (err) {
-				  console.error("Error loading my requests:", err);
-				}*/
-			
-
-		}
+				const data = await response.json();
+				console.log("data recibida:", data);
+				setStore({ myRequests: data }); // Aquí guardamos el array directamente
+			} catch (err) {
+				console.error("Error loading my requests:", err);
+			}
+		} */
 	};
 };
 

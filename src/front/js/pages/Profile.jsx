@@ -8,9 +8,9 @@ export const Profile = () => {
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
   const [activeTab, setActiveTab] = useState("profile"); // Estado para controlar la pestaña activa
-  const { totalPages, currentPage, favorites, myTrips } = store;
-  const { getFavoriteTrips, getMyTrips, getMyRequests } = actions;
-  const { myRequests = [] } = store
+  const { totalPages, currentPage, favorites, myTrips, requests } = store;
+  const { getFavoriteTrips, getMyTrips, getRequests } = actions;
+
   //const myRequests = store.myRequests;
   // const currentUserId = store.user?.id;
 
@@ -25,8 +25,8 @@ export const Profile = () => {
   useEffect(() => {
     getMyTrips(1);
     getFavoriteTrips(1);
-    getMyRequests() // Default to page 1
-  }, [getMyTrips, getFavoriteTrips]);
+    getRequests(1) // Default to page 1
+  }, [getMyTrips, getFavoriteTrips, getRequests]);
 
   const handlePagination = (page) => {
     getFavoriteTrips(page);
@@ -51,7 +51,7 @@ export const Profile = () => {
       day: "numeric",
     });
   };
-  console.log("Mis solicitudes de viaje:", myRequests);
+
 
   return (
     <div className="profile-container">
@@ -331,32 +331,57 @@ export const Profile = () => {
               </div>
             )}
           </div>
-
           <div className={`tab-pane ${activeTab === "requests" ? "show active" : "fade"}`}
             id="requests"
             role="tabpanel"
             aria-labelledby="requests-tab">
-            {!myRequests || myRequests.length === 0 ? (
+            {!requests || requests.length === 0 ? (
               <div className="no-trips-message">
-                <p>You haven't sent any trip requests yet.</p>
+                <p>You don't have any requests!</p>
               </div>
             ) : (
               <div className="trip-cards-container">
-                {myRequests.map((req, index) => {
-                  console.log("Individual request:", req);
-                  return (
-                    <div key={index} className="trip-card">
-                      <div className="trip-card-content">
-                        <h3>{req.trip?.destination}</h3>
-                        <p>Status: <strong>{req.authorization}</strong></p>
-                        <p>Host: {req.trip?.host?.first_name} {req.trip?.host?.last_name}</p>
-                        <button onClick={() => navigate(`/trip-page/${req.trip?.id}`)} className="view-more-btn">
-                          View Trip <i className="fas fa-arrow-right"></i>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                {requests.map((request, index) => (
+                  <ul className="list-group mb-3" key={index}>
+                    <li className="list-group-item">
+                      <p>
+                        You have requested to join the trip to <strong>{request.destination}</strong> <span className="insigniaVerde badge text-end">{request.authorization || "Tag"}</span>
+                      </p>
+                    </li>
+                  </ul>
+                ))}
+              </div>
+            )}
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pagination-container">
+                <button
+                  className="pagination-btn"
+                  disabled={currentPage <= 1}
+                  onClick={() => handlePagination(currentPage - 1)}
+                >
+                  &laquo; Previous
+                </button>
+
+                <div className="page-numbers">
+                  {[...Array(totalPages).keys()].map((num) => (
+                    <button
+                      key={num + 1}
+                      className={`page-number ${currentPage === num + 1 ? "active" : ""}`}
+                      onClick={() => handlePagination(num + 1)}
+                    >
+                      {num + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  className="pagination-btn"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => handlePagination(currentPage + 1)}
+                >
+                  Next &raquo;
+                </button>
               </div>
             )}
           </div>
