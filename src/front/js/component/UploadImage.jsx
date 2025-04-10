@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { useContext } from "react";
 import { Context } from "../store/appContext";
+import "../../styles/uploadImage.css"
 
 export const UploadImage = () => {
   const { actions } = useContext(Context);
@@ -23,7 +24,7 @@ export const UploadImage = () => {
             croppingAspectRatio: 1,  // Relación de aspecto 1:1 para foto de perfil
             croppingDefaultSelectionRatio: 1,
             showSkipCropButton: false,
-            sources: ["local", "camera"], // Fuentes permitidas
+            sources: ["local", "camera", "url", "facebook", "google_drive", "dropbox", "instagram"], // Fuentes permitidas
             multiple: false, // Solo permitir una imagen
           },
           (error, result) => {
@@ -79,7 +80,7 @@ export const UploadImage = () => {
       <button id="upload_widget" className="btn edit-photo-btn d-flex align-items-center justify-content-center gap-2 m-auto">
         <i className="fas fa-camera"></i>
       </button>
-      {imageUrl && <p className="text img-upload mt-2">¡Imagen subida con éxito!</p>}
+      {imageUrl && <p className="text-dark img-upload mt-2">Image uploaded successfully</p>}
     </div>
   );
 };

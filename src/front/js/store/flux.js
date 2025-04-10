@@ -22,7 +22,8 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			selectedTrip: {},
 			selectedUser: {},
 			requests: [],
-			hostRequests: []
+			hostRequests: [],
+			myRequests: []
 		},
 		actions: {
 			setUser: (newUser) => { setStore({ user: newUser }) },
@@ -44,7 +45,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("login response", response)
 				if (!response.ok) {
 					console.log('Error login:', response.status, response.statusText)
-					return
+					return false
 				}
 				const data = await response.json();
 				console.log("login all good", data);
@@ -56,9 +57,11 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				localStorage.setItem('token', data.access_token)
 				localStorage.setItem('user', JSON.stringify(data.results))
 				console.log("user is logged", getStore().isLogged)
+				console.log("login my trips:", getStore().myTrips)
 				getActions().getFavoriteTrips()
 				getActions().getMyTrips()
-				console.log("login my trips:", getStore().myTrips)
+
+				return true
 			},
 			isUserLogged: () => {
 				const token = localStorage.getItem("token");
@@ -386,7 +389,8 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const options = {
 					method: "GET",
 					headers: {
-						"Content-Type": "application/json"},
+						"Content-Type": "application/json"
+					},
 				};
 				const response = await fetch(uri, options);
 				console.log("getTrip response:", response);
@@ -395,7 +399,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					return;
 				}
 				const data = await response.json();
-				setStore({ selectedTrip: data.results})
+				setStore({ selectedTrip: data.results })
 				console.log("get trip:", data)
 			},
 			searchTrips: async (criteria) => {
@@ -644,8 +648,30 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				setStore({ requests: data.results })
 				console.log("data de get requests:", data.results);
 			},
-
-		}
+		},
+		/* getMyRequests: async (page = 1) => {
+			const store = getStore();
+			const uri = `${process.env.BACKEND_URL}/api/my-requests?page=${page}`;
+			const token = localStorage.getItem("token");
+			try {
+				const response = await fetch(uri, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + token
+					}
+				});
+				if (!response.ok) {
+					console.log("error getting requests:", response);
+					return;
+				}
+				const data = await response.json();
+				console.log("data recibida:", data);
+				setStore({ myRequests: data }); // Aquí guardamos el array directamente
+			} catch (err) {
+				console.error("Error loading my requests:", err);
+			}
+		} */
 	};
 };
 

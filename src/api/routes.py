@@ -773,3 +773,33 @@ def get_notifications():
     current_user_id = get_jwt_identity()
     notifications = Notifications.query.filter_by(user_id=current_user_id).order_by(Notifications.date.desc()).all()
     return jsonify([n.serialize() for n in notifications]), 200
+
+
+""" @api.route('/api/my-requests', methods=["GET"])
+@jwt_required()
+def get_my_requests():
+    user_id = get_jwt()['user_id']
+
+    # Buscar los viajes donde el user_id es el host
+    my_trips = Trips.query.filter_by(user_id=user_id).all()
+
+    if not my_trips:
+        return jsonify({'message': "The user does not have trips"}), 404
+
+    # Recoger todos los requests pendientes para esos viajes
+    pending_requests = []
+    for trip in my_trips:
+        requests = Travelers.query.filter(
+        Travelers.trip_id == trip.id,
+        Travelers.authorization.in_(['approved', 'declined', 'pending', 'removed'])).all()
+        pending_requests.extend(requests)
+
+    if not pending_requests:
+        return jsonify({'message': "You haven't done any requests"}), 404
+
+    return jsonify({
+        "message": "Requests retrieved successfully",
+        "results": [request.serialize() for request in pending_requests]
+    }), 200
+
+     """

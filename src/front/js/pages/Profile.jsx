@@ -8,8 +8,10 @@ export const Profile = () => {
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
   const [activeTab, setActiveTab] = useState("profile"); // Estado para controlar la pestaña activa
-  const { totalPages, currentPage, favorites, myTrips } = store;
-  const { getFavoriteTrips, getMyTrips } = actions;
+  const { totalPages, currentPage, favorites, myTrips, requests } = store;
+  const { getFavoriteTrips, getMyTrips, getRequests } = actions;
+
+  //const myRequests = store.myRequests;
   // const currentUserId = store.user?.id;
 
   const handleUploadSuccess = (imageUrl) => {
@@ -22,8 +24,9 @@ export const Profile = () => {
 
   useEffect(() => {
     getMyTrips(1);
-    getFavoriteTrips(1); // Default to page 1
-  }, [getMyTrips, getFavoriteTrips]);
+    getFavoriteTrips(1);
+    getRequests(1) // Default to page 1
+  }, [getMyTrips, getFavoriteTrips, getRequests]);
 
   const handlePagination = (page) => {
     getFavoriteTrips(page);
@@ -34,19 +37,11 @@ export const Profile = () => {
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
 
-    // Separar los valores de la fecha
     const parts = dateString.split(" ");
     if (parts.length !== 3) return "Invalid Date";
-
     let [day, month, year] = parts;
-
-    // Asegurar que el año tiene 4 dígitos (asumimos que "25" es 2025)
     year = parseInt(year, 10) < 100 ? `20${year}` : year;
-
-    // Crear la fecha en formato estándar YYYY-MM-DD
     const formattedDate = `${year}-${month}-${day}`;
-
-    // Convertir a objeto Date y formatear en texto legible
     const date = new Date(formattedDate);
     if (isNaN(date.getTime())) return "Invalid Date";
 
@@ -56,6 +51,7 @@ export const Profile = () => {
       day: "numeric",
     });
   };
+
 
   return (
     <div className="profile-container">
@@ -97,6 +93,13 @@ export const Profile = () => {
               onClick={() => handleTabChange("favorites")}
               type="button">
               My Favorites
+            </button>
+            <button
+              className={`nav-link ${activeTab === "requests" ? "active" : ""}`}
+              id="requests-tab"
+              onClick={() => handleTabChange("requests")}
+              type="button">
+              My requests
             </button>
           </div>
         </nav>
@@ -295,6 +298,60 @@ export const Profile = () => {
               </div>
             )}
 
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pagination-container">
+                <button
+                  className="pagination-btn"
+                  disabled={currentPage <= 1}
+                  onClick={() => handlePagination(currentPage - 1)}
+                >
+                  &laquo; Previous
+                </button>
+
+                <div className="page-numbers">
+                  {[...Array(totalPages).keys()].map((num) => (
+                    <button
+                      key={num + 1}
+                      className={`page-number ${currentPage === num + 1 ? "active" : ""}`}
+                      onClick={() => handlePagination(num + 1)}
+                    >
+                      {num + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  className="pagination-btn"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => handlePagination(currentPage + 1)}
+                >
+                  Next &raquo;
+                </button>
+              </div>
+            )}
+          </div>
+          <div className={`tab-pane ${activeTab === "requests" ? "show active" : "fade"}`}
+            id="requests"
+            role="tabpanel"
+            aria-labelledby="requests-tab">
+            {!requests || requests.length === 0 ? (
+              <div className="no-trips-message">
+                <p>You don't have any requests!</p>
+              </div>
+            ) : (
+              <div className="trip-cards-container">
+                {requests.map((request, index) => (
+                  <ul className="list-group mb-3" key={index}>
+                    <li className="list-group-item">
+                      <p>
+                        You have requested to join the trip to <strong>{request.destination}</strong> <span className="insigniaVerde badge text-end">{request.authorization || "Tag"}</span>
+                      </p>
+                    </li>
+                  </ul>
+                ))}
+              </div>
+            )}
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="pagination-container">
