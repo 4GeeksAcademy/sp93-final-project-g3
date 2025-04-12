@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 export const GetInspired = () => {
   const { store, actions } = useContext(Context);
   const { finishedTrips, totalPages, currentPage, favorites } = store;
-  const { getFinishedTrips } = actions;
+  const { getFinishedTrips, getFavoriteTrips} = actions;
   const navigate = useNavigate();
   const handleSelectedTrip = (trip) => {
     actions.setSelectedTrip(trip)
@@ -15,6 +15,7 @@ export const GetInspired = () => {
   }
 
   useEffect(() => {
+    getFavoriteTrips();
     getFinishedTrips(1); // Default to page 1
   }, [getFinishedTrips]);
 
@@ -79,7 +80,7 @@ export const GetInspired = () => {
               
                 {store.favorites.find(fav => fav.id === trip.id) ? (
                   <button
-                    className="favorite-btn favorite-btnliked"
+                    className="btn favorite-btnliked"
                     onClick={() => { actions.removeFavorite(trip.id) }}
                     title="Remove from favorites"
                   >

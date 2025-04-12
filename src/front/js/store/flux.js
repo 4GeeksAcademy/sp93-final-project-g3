@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 		store: {
 			message: null,
 			user: {},
+			trip: {},
 			isLogged: false,
 			isAdmin: false,
 			trips: {},
@@ -23,7 +24,9 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			selectedUser: {},
 			requests: [],
 			hostRequests: [],
-			myRequests: []
+			myRequests: [],
+			tripTravelers: [],
+			traveler: {}
 		},
 		actions: {
 			setUser: (newUser) => { setStore({ user: newUser }) },
@@ -325,24 +328,27 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					throw error;
 				}
 			},
-			updateTrip: async (tripId, data) => {
-				try {
-					const token = localStorage.getItem('token');
-					const response = await fetch(`${process.env.BACKEND_URL}/api/trips/${tripId}`, {
-						method: 'PUT',
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${token}`
-						},
-						body: JSON.stringify(data)
-					});
-
-					if (!response.ok) throw new Error('Failed to update trip');
-					return await response.json();
-				} catch (error) {
-					console.error("Error updating trip:", error);
-					throw error;
+			updateTrip: async (tripId, dataToSend) => {
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}`;
+				const options = {
+					method: 'PUT',
+					headers: {
+						"Content-Type": "application/json",
+						"Authorization": "Bearer " + localStorage.getItem("token")
+					},
+					body: JSON.stringify(dataToSend)
+				};
+				const response = await fetch(uri, options);
+				console.log("update trip response", response)
+				if (!response.ok) {
+					console.log("Error updating trip:", response);
+					return
 				}
+				const data = await response.json();
+				console.log("console de data edit trip", data)
+				setStore({ trip: data.results});
+				console.log("Trip successfully updated", getStore().trip)
+				return data
 			},
 			getTrips: async () => {
 				const store = getStore();
@@ -384,6 +390,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("data de get my trips", data.mytrips);
 			},
 			getTrip: async (tripId) => {
+				console.log("trip id flux:", tripId)
 				const store = getStore();
 				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}`;
 				const options = {
@@ -399,7 +406,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					return;
 				}
 				const data = await response.json();
-				setStore({ selectedTrip: data.results })
+				setStore({ trip: data.results })
 				console.log("get trip:", data)
 			},
 			searchTrips: async (criteria) => {
@@ -504,7 +511,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 						"Content-Type": "application/json",
 						"Authorization": "Bearer " + token
 					},
-					body: JSON.stringify({ trip_id: tripId })
+					body: JSON.stringify()
 				}
 				const response = await fetch(uri, options)
 				if (!response.ok) {
@@ -520,7 +527,10 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const store = getStore();
 				const token = localStorage.getItem("token");
 				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/join`;
-				if (!token) throw new Error("No token found");
+				if (!token) {
+					alert("Oops! You don't seem to be logged in. Please log in or register to join this trip.");
+					return
+				}
 				const options = {
 					method: "POST",
 					headers: {
@@ -647,6 +657,25 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const data = await response.json();
 				setStore({ requests: data.results })
 				console.log("data de get requests:", data.results);
+			},
+			getTripTravelers: async (tripId) => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/trips/${tripId}/travelers`;
+				const options = {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				};
+				const response = await fetch(uri, options);
+				console.log("get travelers:", response)
+				if (!response.ok) {
+					console.log("error getting travelers:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ tripTravelers: data.results })
+				console.log("data de get trip travelers:", data.results);
 			},
 		},
 		/* getMyRequests: async (page = 1) => {
