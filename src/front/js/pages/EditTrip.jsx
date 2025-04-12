@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import '../../styles/tripPage.css';
+import '../../styles/editTrip.css';
 import { Context } from "../store/appContext";
 import { TripPhoto } from "../component/TripPhoto.jsx";
 
@@ -8,34 +8,72 @@ export const EditTrip = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
     const { tripId } = useParams();
-    const { requests, user, trip } = store;
-    const isHost = store.user.id === store.selectedTrips?.host_id;
-    console.log("user id", store.user?.id)
-    console.log("trip data", store.selectedTrip?.host_id)
+    const { tripTravelers } = store;
 
-    const handleUploadSuccess = (imageUrl) => {
-        actions.updateTripPhoto(imageUrl, tripId)
-    };
+  /*   const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState(""); */
+    const [budget, setBudget] = useState("");
+    const [ageMin, setAgeMin] = useState("");
+    const [ageMax, setAgeMax] = useState("");
+    const [budgetCurrency, setBudgetCurrency] = useState("");
+    const [status, setStatus] = useState("");
+    const [description, setDescription] = useState("");
 
-    const handleLeaveTrip = () => {
-        actions.leaveTrip(tripId)
-    };
-
-    const handleJoinTrip = () => {
-        actions.joinTrip(tripId)
-    };
+    const isHost = store.user && store.trip && store.user.id === store.trip.host_id;
 
     useEffect(() => {
-        if (tripId) {
-            console.log("Fetching trip with ID:", tripId);
-            actions.getTrip(tripId);
-            actions.getRequests();
-        }
+        const fetchTrip = async () => {
+            await actions.getTrip(tripId);
+            await actions.getTripTravelers(tripId);
+        };
+        fetchTrip();
     }, [tripId]);
 
+    useEffect(() => {
+        if (store.trip) {
+            /* setStartDate(store.trip.start_date);
+            setEndDate(store.trip.end_date); */
+            setBudget(store.trip.budget);
+            setBudgetCurrency(store.trip.budget_currency);
+            setAgeMin(store.trip.age_min);
+            setAgeMax(store.trip.age_max);
+            setStatus(store.trip.status);
+            setDescription(store.trip.description);
+        }
+    }, [store.trip]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const dataToSend = {
+            /* start_date: startDate,
+            end_date: endDate, */
+            budget,
+            budget_currency: budgetCurrency,
+            age_min: ageMin,
+            age_max: ageMax,
+            status,
+            description
+        };
+        await actions.updateTrip(tripId, dataToSend);
+        navigate(`/trip-page/${tripId}`);
+        console.log("data to send", dataToSend)
+    };
+    
 
-    if (!store.trips) {
+    const handleCancel = () => {
+        navigate(`/trip-page/${tripId}`);
+    };
+
+    const handleSelectedUser = (user) => {
+        actions.setSelectedUser(user);
+        navigate(`/user/${user.id}`);
+    };
+
+    const handleUploadSuccess = (imageUrl) => {
+        actions.updateTripPhoto(imageUrl, tripId);
+    };
+
+    if (!store.trip) {
         return (
             <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
                 <div className="spinner-border" role="status">
@@ -49,79 +87,78 @@ export const EditTrip = () => {
         <div className="container-fluid bg-light min-vh-100">
             <div className="container mt-5">
                 <div className="card p-4 shadow-sm position-relative">
-                    <div className="position-absolute top-0 end-0 m-3 d-flex gap-2">
-                        {store.favorites.find(fav => fav.id === selectedTrip.Id) ? (
-                            <button
-                                className="favorite-btn favorite-btnliked"
-                                onClick={() => { actions.removeFavorite(selectedTrip.Id) }}
-                                title="Remove from favorites"
-                            >
-                                <i className="fas fa-heart"></i>
+                    <div className="position-absolute top-0 end-0 m-3">
+                        <div className="d-flex flex-row gap-2 align-items-center">
+                            <h2 className="profile-title">Edit Trip</h2>
+                            <button className="edit-profile-btn me-2" onClick={handleSubmit}>
+                                Save Changes
                             </button>
-                        ) : (
-                            <button
-                                className="favorite-btn"
-                                onClick={() => { actions.addFavorite(selectedTrip.Id) }}
-                                title="Add to favorites"
-                            >
-                                <i className="fas fa-heart"></i>
+                            <button className="edit-profile-btn bg-danger" onClick={handleCancel}>
+                                Cancel
                             </button>
-                        )}
-                        {!isHost && (
-                            <button className="btn btn-outline-light" onClick={() => navigate("/edit-trip")}>
-                                <i className="fas fa-edit"></i>
-                            </button>
-                        )}
+                        </div>
                     </div>
+
                     <div className="row align-items-center">
                         <div className="col-md-5">
                             <img
-                                src={store.selectedTrip.photo || "https://imgs.search.brave.com/vbj_HDxOJOkTMgvYVE-feghHjfAR2b_lX3ipkxQqzEw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTE4/NzQwNjY0My9lcy9m/b3RvL21hbHRhLWRl/c3Rpbm8tZGUtdmlh/amUtcG9yLWVsLW1l/ZGl0ZXJyJUMzJUEx/bmVvLW1hcnNheGxv/a2stZmlzaGluZy12/aWxsYWdlLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1LXzUy/NTJGVkdyUTNsMG15/QjdqVE12NE50Q1VG/TUhaUWlnclZkWEFq/ZHpNPQ"}
+                                src={store.trip.photo || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
                                 alt="Trip"
                                 className="img-fluid rounded"
                             />
-                            {!isHost && (
+                            {isHost && (
                                 <TripPhoto tripId={tripId} onUploadSuccess={handleUploadSuccess} />
                             )}
                         </div>
 
                         <div className="col-md-7">
-                            <h1 className="h3">{store.selectedTrip.destination}</h1>
-                            <h3><span className="insigniaVerde badge">{store.selectedTrip.status || "Tag"}</span></h3>
-                            <p className="text-success fw-bold">${store.selectedTrip.budget || "50"} budget</p>
+                            <h1 className="h3">{store.trip.destination}</h1>
+
+                            <select className="form-select mb-2" value={status} onChange={(e) => setStatus(e.target.value)}>
+                                <option value="planning">Planning</option>
+                                <option value="finished">Finished</option>
+                                <option value="ongoing">Ongoing</option><option value="cancelled">Cancelled</option>
+                            </select>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                className="form-control mb-2"
+                                value={budget}
+                                onChange={(e) => setBudget(e.target.value)}
+                            />
+
+                            <select
+                                className="form-select mb-2"
+                                value={budgetCurrency}
+                                onChange={(e) => setBudgetCurrency(e.target.value)}
+                            >
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="MXN">MXN - Mexican Peso</option>
+                            </select>
+
                             <div className="d-flex mb-3">
                                 <div className="w-50 me-2">
-                                    <label className="form-label">Start date</label>
+                                    <label className="form-label">Age Min.</label>
                                     <input
-                                        type="date"
-                                        className="form-control form-control-sm"
-                                        defaultValue={store.selectedTrip.startDate || "2025-05-22"}
-                                        readOnly
+                                        type="text"
+                                        className="form-control"
+                                        value={ageMin}
+                                        onChange={(e) => setAgeMin(e.target.value)}
                                     />
                                 </div>
                                 <div className="w-50">
-                                    <label className="form-label">End date</label>
+                                    <label className="form-label">Age Max.</label>
                                     <input
-                                        type="date"
-                                        className="form-control form-control-sm"
-                                        defaultValue={store.selectedTrip.endDate || "2025-06-01"}
-                                        readOnly
+                                        type="text"
+                                        className="form-control"
+                                        value={ageMax}
+                                        onChange={(e) => setAgeMax(e.target.value)}
                                     />
                                 </div>
                             </div>
-                            {isHost && (
-                                <>
-                                    {store.requests.find(request => request.id.toString() === tripId) ? (
-                                        <button className="travelers-btn" onClick={handleLeaveTrip} title="Leave trip">
-                                            Leave trip
-                                        </button>
-                                    ) : (
-                                        <button className="travelers-btn" onClick={handleJoinTrip} title="Join trip">
-                                            Join the adventure
-                                        </button>
-                                    )}
-                                </>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -130,28 +167,45 @@ export const EditTrip = () => {
             <div className="container mt-4">
                 <div className="card p-4 shadow-sm">
                     <h2 className="h4">Details of the trip</h2>
-                    <p className="text-muted mt-2">{store.selectedTrip.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."}</p>
+                    <textarea
+                        className="form-control mt-2"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={3}
+                    />
                 </div>
             </div>
 
             <div className="container mt-4">
                 <div className="card p-4 shadow-sm">
-                    <h2 className="h4">Participants 3/10</h2>
-                    <div className="row mt-3">
-                        {[1, 2, 3].map((_, index) => (
-                            <div key={index} className="col-md-4">
-                                <div className="card text-center p-3">
-                                    <div className="rounded-circle bg-secondary mx-auto" style={{ width: "60px", height: "60px" }}></div>
-                                    <p className="mt-2 fw-semibold">User name</p>
-                                    <p className="text-muted">Host</p>
-                                    <button className="btn btn-outline-secondary">View profile</button>
+                    <h2 className="h4">Travelers</h2>
+                    <div className="mt-3 d-flex flex-wrap">
+                        {tripTravelers?.length ? (
+                            tripTravelers.map((trav, index) => (
+                                <div className="card m-2" style={{ width: "12rem" }} key={index}>
+                                    <img
+                                        src={trav.traveler.photo || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
+                                        alt={trav.traveler.first_name || "Profile"}
+                                        className="card-img-top"
+                                    />
+                                    <div className="card-body">
+                                        <h5 className="card-title">{trav.traveler.first_name}</h5>
+                                        <p className="card-text">{trav.traveler.biography}</p>
+                                        <button
+                                            onClick={() => handleSelectedUser(trav.traveler)}
+                                            className="btn btn-sm btn-outline-primary"
+                                        >
+                                            View Profile
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p>No one has joined this trip yet. Be the first one!</p>
+                        )}
                     </div>
                 </div>
             </div>
-
         </div>
     );
 };

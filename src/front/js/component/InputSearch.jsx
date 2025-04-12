@@ -15,7 +15,7 @@ export const InputSearch = () => {
         if (autocomplete) {
             const place = autocomplete.getPlace();
             console.log("Dirección:", place);
-            actions.setSelectedTrip(place.formatted_address)
+            actions.setSelectedTrip(place.name)
         }
     };
     return (

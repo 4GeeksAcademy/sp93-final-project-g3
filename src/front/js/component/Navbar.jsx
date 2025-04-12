@@ -25,7 +25,7 @@ export const Navbar = () => {
 		<nav className="navbar navbar-expand-lg navbar-custom">
 			<div className="container">
 				<span className="btn navbar-brand" onClick={() => navigate("/")}>
-					<img src={Vibe} alt="Logo" width="120" height="60" />
+				<img src={Vibe} alt="Logo" className="navbar-logo" />
 				</span>
 
 				<button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -57,7 +57,7 @@ export const Navbar = () => {
 					</ul>
 
 					<div className="d-flex align-items-center">
-						{store.isLogged ? (
+						{/* {store.isLogged ? (
 							<div className="d-flex align-items-center">
 										<span onClick={() => navigate("/profile")} className="nav-link text-light me-3 clickable">Welcome, {store.user.first_name}</span>
 							
@@ -73,6 +73,42 @@ export const Navbar = () => {
 								<button id="btnGroupDrop1" type="button" className="btn btn-bell me-2" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => navigate("/notifications")}>
 									<i className="fas fa-bell"></i>
 								</button>
+							</div>
+						) : (
+							<ul className="navbar-nav me-auto mb-2 mb-lg-0">
+								<li className="nav-item">
+									<span onClick={() => navigate("/login")} className="btn btn-login me-2">Login</span>
+								</li>
+								<li className="nav-item">
+									<span onClick={() => navigate("/register")} className="btn btn-register me-2">Register</span>
+								</li>
+							</ul>
+						)} */}
+						{store.isLogged ? (
+							
+							<div className="dropdown">
+								<button
+									type="button"
+									className="btn btn-bell ms-2"
+									onClick={() => navigate("/notifications")}
+								>
+									<i className="fas fa-bell"></i>
+								</button>
+								<img
+									src={store.user.photo || "https://via.placeholder.com/40"}
+									alt="User"
+									className="rounded-circle dropdown-toggle user-avatar"
+									role="button"
+									id="userDropdown"
+									data-bs-toggle="dropdown"
+									aria-expanded="false"
+								/>
+								<ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+									<li><span className="dropdown-item" onClick={() => navigate("/profile")}>My Profile</span></li>
+									<li><hr className="dropdown-divider" /></li>
+									<li><span className="dropdown-item" onClick={handleLog}>Log out</span></li>
+								</ul>
+								
 							</div>
 						) : (
 							<ul className="navbar-nav me-auto mb-2 mb-lg-0">

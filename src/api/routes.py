@@ -186,9 +186,9 @@ def update_password():
 def update_trip(trip_id):
     response_body = {}
     data = request.json
-
+    print(data)
     user_id = get_jwt()['user_id']
-    
+    print(user_id)
     row = Trips.query.get(trip_id)
     if not row:
         response_body = {
@@ -211,7 +211,7 @@ def update_trip(trip_id):
             response_body = {
                 "error": "Formato de fecha inválido para start_date. Use YYYY-MM-DD"
             }
-            return jsonify(response_body), 400
+            return jsonify(response_body), 406
     if 'end_date' in data:
         try:
             row.end_date = datetime.strptime(data['end_date'], "%Y-%m-%d")
@@ -219,7 +219,7 @@ def update_trip(trip_id):
             response_body = {
                 "error": "Formato de fecha inválido para end_date. Use YYYY-MM-DD"
             }
-            return jsonify(response_body), 400
+            return jsonify(response_body), 406
     if 'description' in data:
         row.description = data['description']
     if 'photo' in data:
@@ -417,7 +417,8 @@ def delete_trip(trip_id): #3
     }
     return jsonify(response_body), 200
 
-# POST /trips/{id}/JOIN → User request to join a trip
+
+# POST - User request to join a trip
 @api.route('/trips/<int:trip_id>/join', methods=['POST'])
 @jwt_required()
 def join_trip(trip_id):
@@ -449,7 +450,42 @@ def join_trip(trip_id):
 
     return response_body, 200
 
-# GET /trips/requests/host → User request to join a trip
+# DELETE - User leaves a trip
+@api.route('/trips/<int:trip_id>/leave', methods=['DELETE'])
+@jwt_required()
+def leave_trip(trip_id):
+    response_body = {}
+    user_id = get_jwt()['user_id']
+
+    trip = Trips.query.get(trip_id)
+    if not trip:
+        response_body['message'] = "Trip not found"
+        return response_body, 404
+    
+    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
+    if not traveler_request:
+        response_body['message'] = "You are not a traveler in this trip"
+        return response_body, 404
+    
+    # Porque en uno lo borro y el otro lo cancelo en pedding y en approved"cancelled"
+
+    if traveler_request.authorization == 'pending':
+        db.session.delete(traveler_request)
+        db.session.commit()
+        response_body['message'] = "Traveler request removed successfully"
+        return response_body, 200
+    
+    if traveler_request.authorization == 'approved':
+        traveler_request.authorization = 'cancelled'
+        db.session.commit()
+        response_body['message'] = "Traveler status updated to cancelled"
+        return response_body, 200
+    
+    response_body['message'] = "Cannot leave the trip in the current state"
+    return response_body, 400
+
+
+# GET → Request for the host to approve or decline
 @api.route('/trips/requests/host', methods=['GET'])
 @jwt_required()
 def get_host_requests():
@@ -476,7 +512,7 @@ def get_host_requests():
     }), 200
 
 
-# PUT/trips/{id}/travelers/traveler.id/approve → Host approves a traveler
+# PUT → Host approves a traveler
 @api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/approve', methods=['PUT'])
 @jwt_required()
 def approve_traveler(trip_id, traveler_id):
@@ -506,7 +542,8 @@ def approve_traveler(trip_id, traveler_id):
     response_body['results'] = traveler_request.serialize()
     return response_body, 200
 
-# PUT/trips/{id}/travelers/traveler.id/decline → Host Declines a traveler
+
+# PUT → Host Declines a traveler
 @api.route('/trips/<int:trip_id>/travelers/<int:traveler_id>/decline', methods=['PUT'])
 @jwt_required()
 def decline_traveler(trip_id, traveler_id):
@@ -566,25 +603,12 @@ def remove_traveler(trip_id, traveler_id):
     response_body['results'] = traveler_request.serialize()
     return response_body, 200
 
+
 # GET /trips/{id}/travelers → list of the travelers of a trip
 @api.route('/trips/<int:trip_id>/travelers', methods=['GET'])
-@jwt_required()
 def get_trip_travelers(trip_id):
     response_body = {}
-    user_id = get_jwt()['user_id']
 
-    trip = Trips.query.get(trip_id)
-    if not trip:
-        response_body['message'] = "Trip not found"
-        return response_body, 404
-    
-    is_host = trip.host_id == user_id
-    is_approved_traveler = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id, authorization='approved').first() is not None
-
-    if not (is_host or is_approved_traveler):
-        response_body['message'] = "Only the host or approved travelers can view this list"
-        return response_body, 403
-    
     travelers = Travelers.query.filter_by(trip_id=trip_id, authorization='approved').all()
 
     if not travelers:
@@ -598,40 +622,8 @@ def get_trip_travelers(trip_id):
     response_body['results'] = travelers_list
     return response_body, 200
 
-# DELETE /trips/{id}/leave → User leaves a trip
-@api.route('/trips/<int:trip_id>/leave', methods=['DELETE'])
-@jwt_required()
-def leave_trip(trip_id):
-    response_body = {}
-    user_id = get_jwt()['user_id']
 
-    trip = Trips.query.get(trip_id)
-    if not trip:
-        response_body['message'] = "Trip not found"
-        return response_body, 404
-    
-    traveler_request = Travelers.query.filter_by(trip_id=trip_id, traveler_id=user_id).first()
-    if not traveler_request:
-        response_body['message'] = "You are not a traveler in this trip"
-        return response_body, 404
-    
-    # Porque en uno lo borro y el otro lo cancelo en pedding y en approved"cancelled"
-
-    if traveler_request.authorization == 'pending':
-        db.session.delete(traveler_request)
-        db.session.commit()
-        response_body['message'] = "Traveler request removed successfully"
-        return response_body, 200
-    
-    if traveler_request.authorization == 'approved':
-        traveler_request.authorization = 'cancelled'
-        db.session.commit()
-        response_body['message'] = "Traveler status updated to cancelled"
-        return response_body, 200
-    
-    response_body['message'] = "Cannot leave the trip in the current state"
-    return response_body, 400
-
+# GET → Requests of a user
 @api.route('/trips/requests', methods=['GET'])
 @jwt_required()
 def get_my_requests():
@@ -656,6 +648,7 @@ def get_my_requests():
         "message": "User requests retrieved successfully",
         "results": results
     }), 200
+
 
 @api.route('/trips/<int:trip_id>/favorites', methods=['POST', 'DELETE'])
 @jwt_required()

@@ -11,9 +11,6 @@ export const Profile = () => {
   const { totalPages, currentPage, favorites, myTrips, requests } = store;
   const { getFavoriteTrips, getMyTrips, getRequests } = actions;
 
-  //const myRequests = store.myRequests;
-  // const currentUserId = store.user?.id;
-
   const handleUploadSuccess = (imageUrl) => {
     actions.updateProfilePhoto(imageUrl)
   }
