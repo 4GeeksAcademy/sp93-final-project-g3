@@ -144,6 +144,10 @@ class Travelers(db.Model):
             'traveler': {
                 'id': self.traveler_to.id,
                 'first_name': self.traveler_to.first_name,
+                'last_name': self.traveler_to.last_name,
+                'date_of_birth': self.traveler_to.date_of_birth,
+                'gender': self.traveler_to.gender,
+                'biography': self.traveler_to.biography,
                 'photo': self.traveler_to.photo
             },
             'authorization': self.authorization, 

@@ -62,3 +62,35 @@ p {
 body {
     font-family: 'Poppins', sans-serif !important;
 }
+
+.favorite-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #FFA5A0;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 2; /* Ensure it's above other content */
+  }
+  
+  .favorite-btn:hover {
+    color: #FF5942;
+  }
+  
+  .favorite-btnliked {
+    color: #FF5942;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .favorite-btnliked:hover {
+    color: #f58273;
+  }
