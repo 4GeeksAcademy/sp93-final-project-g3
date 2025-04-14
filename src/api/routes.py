@@ -301,6 +301,30 @@ def get_trips():
     }
     return jsonify(response_body), 200
 
+#GET - Lista de los trips de un user
+@api.route('/trips/user/<int:user_id>', methods=['GET'])
+def get_user_trips(user_id):
+    # Buscar los viajes donde el usuario es el anfitrión
+    host_trips = Trips.query.filter_by(host_id=user_id).all()
+
+    # Buscar los viajes donde el usuario es un viajero
+    traveler_trips = Trips.query.join(Travelers).filter(Travelers.traveler_id == user_id).all()
+
+    # Unir ambas listas de viajes
+    all_trips = host_trips + traveler_trips
+
+    if not all_trips:
+        response_body = {
+            "error": "No trips found for this user"
+        }
+        return jsonify(response_body), 404
+
+    response_body = {
+        "message": "Trips retrieved successfully",
+        "results": [trip.serialize() for trip in all_trips]
+    }
+
+    return jsonify(response_body), 200
 
 # GET /trips → busqueda de viajes
 @api.route('/trips/search', methods=['GET'])

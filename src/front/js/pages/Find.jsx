@@ -113,11 +113,11 @@ export const Find = () => {
           </button>
         </div>
 
-        <button className="btn toggle-filters-btn" onClick={() => setShowFilters(!showFilters)}>
+     {/*    <button className="btn toggle-filters-btn" onClick={() => setShowFilters(!showFilters)}>
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>
-
-        {showFilters && (
+ */}
+      {/*   {showFilters && (
           <div className="filters-section">
             <input
               type="number"
@@ -153,7 +153,7 @@ export const Find = () => {
               Apply Filters
             </button>
           </div>
-        )}
+        )} */}
       </form>
       <div className="trip-cards-container">
         {paginatedResults.map((trip, index) => (

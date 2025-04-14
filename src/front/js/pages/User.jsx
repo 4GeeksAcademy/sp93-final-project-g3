@@ -9,26 +9,20 @@ export const User = () => {
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
   const [activeTab, setActiveTab] = useState("profile"); // Estado para controlar la pestaña activa
-  const { totalPages, currentPage, myTrips } = store;
-  const { getMyTrips } = actions;
-  const { userId } = store.selectedUser;
+  const { totalPages, currentPage, userTrips, user } = store;
+  const { getUser, getUserTrips } = actions;
+ /*  const { userId } = store.selectedUser; */
+  const userId = store.selectedUser?.userId || store.selectedUser?.id;
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
-
   useEffect(() => {
-          if (userId) {
-              console.log("Fetching user with ID:", userId);
-              actions.getUser(userId);
-          }
-      }, [userId]);
-
-  const handlePagination = (page) => {
-    getFavoriteTrips(page);
-    getMyTrips(page); // Load the trips for the selected page
-    window.scrollTo(0, 0); // Scroll back to top when changing pages
-  };
+    if (userId) {
+      getUser(userId);
+      getUserTrips(userId);
+    }
+  }, [userId]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -76,13 +70,13 @@ export const User = () => {
               type="button">
               User Profile
             </button>
-            {/* <button
+            <button
               className={`nav-link ${activeTab === "trips" ? "active" : ""}`}
               id="trips-tab"
               onClick={() => handleTabChange("trips")}
               type="button">
-              User Trips
-            </button> */}
+              Trips
+            </button>
           </div>
         </nav>
         <div className="tab-content profile-content">
@@ -113,17 +107,17 @@ export const User = () => {
               </div>
             </div>
           </div>
-          {/* <div className={`tab-pane ${activeTab === "trips" ? "show active" : "fade"}`}
+          <div className={`tab-pane ${activeTab === "trips" ? "show active" : "fade"}`}
             id="trips"
             role="tabpanel"
             aria-labelledby="trips-tab">
-            {!myTrips || myTrips.length === 0 ? (
+            {!userTrips|| userTrips.length === 0 ? (
               <div className="no-trips-message">
                 <p>They don't have any past or upcoming trips.</p>
               </div>
             ) : (
               <div className="trip-cards-container">
-                {myTrips.map((trip, index) => (
+                {userTrips.map((trip, index) => (
                   <div key={index} className="trip-card">
                     <div className="trip-card-image">
                       <img
@@ -193,7 +187,7 @@ export const User = () => {
                 </button>
               </div>
             )}
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
