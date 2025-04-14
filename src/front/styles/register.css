@@ -1,6 +1,6 @@
 /* Background Image */
 .form-register {
-    background-image: url('../../../../sp93-final-project-g3/public/girls2.jpg') center/cover no-repeat;
+    background-image: url('../img/girls.jpg') center/cover no-repeat;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
