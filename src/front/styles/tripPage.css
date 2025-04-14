@@ -1,0 +1,105 @@
+.card .insigniaVerde.badge {
+    background-color: #CFF7D3 !important;
+    border-radius: 8px !important;
+    color: #02542D !important;
+}
+
+/* Contenedor de imagen */
+.trip-image-container {
+    background-color: #f8f9fa;
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+/* Contenedor de contenido */
+.trip-content-container {
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+/* Asegurar altura consistente en móviles */
+@media (max-width: 768px) {
+    .trip-image-container {
+        border-radius: 0.25rem 0.25rem 0 0;
+        min-height: 250px !important;
+    }
+
+    .trip-content-container {
+        border-radius: 0 0 0.25rem 0.25rem;
+    }
+}
+
+
+.favorite-btn1,
+.edit-btn1 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.favorite-btn1:hover {
+    color: #fc6c64;
+    transform: scale(1.2);
+    transition: transform 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+.edit-btn1:hover {
+    color: #aaa1a1;
+    transform: scale(1.2);
+    transition: transform 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+.favorite1-btnliked {
+    color: #FF5942;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.favorite1-btnliked:hover {
+    color: #f58273;
+    transform: scale(1.2);
+    transition: transform 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+.travelers-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #5B52BC;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+    /* Align to the start of flex container */
+}
+
+.travelers-btn:hover {
+    background-color: #4a46a0;
+    color: white;
+}
+
+.info-value {
+    background: #ffffff;
+}

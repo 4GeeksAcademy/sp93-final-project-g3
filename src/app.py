@@ -5,12 +5,12 @@ import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
+from flask_jwt_extended import JWTManager
 from api.utils import APIException, generate_sitemap
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from api.models import db
-
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
@@ -30,6 +30,8 @@ setup_admin(app)  # Add the admin
 setup_commands(app)  # Add the admin
 app.register_blueprint(api, url_prefix='/api')  # Add all endpoints form the API with a "api" prefix
 
+app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY') # Change this!
+jwt = JWTManager(app)
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)

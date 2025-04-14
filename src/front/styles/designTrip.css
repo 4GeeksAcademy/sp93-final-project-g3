@@ -1,0 +1,58 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.design-trip-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+  text-align: center;
+  font-family: 'poppins';
+  color: #5B52BC;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.design-trip-form .form-label {
+  color: #FF5942;
+  font-weight: 500;
+}
+
+.custom-input {
+  border: 1px solid #8f89ca;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.custom-input:focus {
+  border-color: #5B52BC;
+  box-shadow: 0 0 5px #8f89ca;
+}
+
+.custom-btn {
+  background-color:#FF5942;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+  background-color: #FFA5A0 ;
+}
+
+.form-select.custom-input {
+  border: 1px solid #8f89ca;
+  border-radius: 4px;
+  padding: 0.5rem;
+}

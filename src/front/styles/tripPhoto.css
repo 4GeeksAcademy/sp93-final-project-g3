@@ -1,0 +1,22 @@
+.edit-photo-btn {
+    background: rgba(114, 7, 7);
+    border: none;
+    color: rgb(128, 75, 75);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.edit-photo-btn:hover {
+    background: rgb(80, 56, 56);
+    color: #FF5942;
+}
+
+.img-upload {
+    color:#FF5942;
+}

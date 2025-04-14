@@ -1,0 +1,12 @@
+.custom-input {
+    border: 1px solid #8f89ca;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .custom-input:focus {
+    border-color: #5B52BC;
+    box-shadow: 0 0 5px #8f89ca;
+  }

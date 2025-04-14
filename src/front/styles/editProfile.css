@@ -1,0 +1,215 @@
+.profile-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.profile-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+
+.profile-header {
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #FFB3A8, #FF5942);
+
+    color: white;
+    position: relative;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    margin-bottom: 1rem;
+}
+
+.profile-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.edit-profile-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.edit-profile-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+
+.profile-tabs {
+    padding: 0 2rem;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.nav-link {
+    color: #495057;
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    border: none;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+}
+
+.nav-link.active {
+    color: #5B52BC;
+    background: transparent;
+    border-bottom: 3px solid #5B52BC;
+}
+
+.nav-link:hover:not(.active) {
+    color: #5B52BC;
+}
+
+
+.profile-content {
+    padding: 2rem;
+}
+
+
+.profile-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-group {
+    margin-bottom: 1.5rem;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #FF5942;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.info-value {
+    padding: 0.8rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #5B52BC;
+    font-size: 1rem;
+    border: 1px solid #8f89ca;
+    color: black;
+}
+
+.bio {
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+
+.empty-message {
+    text-align: center;
+    color: #6c757d;
+    padding: 2rem;
+    font-style: italic;
+}
+
+
+@media (max-width: 768px) {
+    .profile-info {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-header {
+        padding: 1.5rem;
+    }
+
+    .profile-title {
+        font-size: 1.5rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+/* ... (mantén los estilos anteriores) ... */
+
+/* Estilos para campos no editables */
+.non-editable {
+    color: #000000;
+    padding: 0.8rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #cccccc;
+    font-size: 1rem;
+    border: 1px solid #e0e0e0;
+}
+
+.edit-note {
+    font-size: 0.8rem;
+    color: #999999;
+    font-style: italic;
+    margin-left: 0.5rem;
+}
+
+/* Ajustes para los inputs en el header */
+.profile-title input.profile-edit-input {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.profile-title input.profile-edit-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.profile-title input.profile-edit-input.mt-2 {
+    margin-top: 0.5rem;
+}
+
+/* Mejoras para los botones */
+.edit-btn {
+    padding: 0.6rem 1.8rem;
+    font-size: 1rem;
+}
+
+.save-btn {
+    background-color: #5B52BC;
+}
+
+.cancel-btn {
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+/* Textarea de biografía */
+.bio-textarea {
+    min-height: 120px;
+    line-height: 1.6;
+}

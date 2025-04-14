@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime,date
 
 
 db = SQLAlchemy()
@@ -6,16 +7,150 @@ db = SQLAlchemy()
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    is_admin = db.Column(db.Boolean(), unique=False, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False) 
+    password = db.Column(db.String(80), nullable=False)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
+    gender = db.Column(db.Enum("male", "female", "non_binary", "other", name='gender'))
+    date_of_birth = db.Column(db.Date)  
+    photo = db.Column(db.String(300))  
+    biography = db.Column(db.String(500)) 
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    is_active = db.Column(db.Boolean(), nullable=False, default=True)
+    is_admin = db.Column(db.Boolean(), nullable=False, default=False)
 
     def __repr__(self):
         return f'<User {self.id} - {self.email}>'
 
     def serialize(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'gender': self.gender,
+            'age': self.calculate_age(),  
+            'date_of_birth': self.date_of_birth.isoformat() if self.date_of_birth else None,
+            'photo': self.photo,
+            'biography': self.biography,
+            'created_at': self.created_at.strftime("%d %m %y"),
+            'is_active': self.is_active,
+            'is_admin': self.is_admin
+        }
+    
+    def calculate_age(self):
+        if not self.date_of_birth:
+            return None
+        today = date.today()
+        age = today.year - self.date_of_birth.year
+        if (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day):
+            age -= 1
+        return age
+    
+
+class Trips(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    destination = db.Column(db.String(50), nullable=False)
+    start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    end_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    available_seats = db.Column(db.Integer)
+    description = db.Column(db.String(2000), nullable=False)
+    photo = db.Column(db.String(300))  # Imagen opcional
+    budget = db.Column(db.Integer, nullable=False)
+    budget_currency = db.Column(db.String(), nullable=False)
+    age_min = db.Column(db.Integer)
+    age_max = db.Column(db.Integer)
+    status = db.Column(db.Enum('planning', 'finished', 'ongoing', 'cancelled', name='status'), nullable=False) # Enum con estado inicial
+    host_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)  # Clave foránea a Users
+    host_to = db.relationship('Users', foreign_keys=[host_id], backref=db.backref('host_to', lazy='select'))
+   
+    def __repr__(self):
+        return f'<Trip {self.id} - {self.destination} ({self.start_date})>'
+
+    def serialize(self):
         return {'id': self.id,
-                'email': self.email,
-                'is_active': self.is_active,
-                'is_admin': self.is_admin}
+            'host_id': self.host_id,
+            'host': self.host_to.serialize(),
+            'destination': self.destination,
+            'start_date': self.start_date.strftime("%d %m %y"),
+            'end_date': self.end_date.strftime("%d %m %y"),
+            'available_seats': self.available_seats,
+            'description': self.description,
+            'photo': self.photo,
+            'budget': self.budget,
+            'budget_currency': self.budget_currency,
+            'age_min': self.age_min,
+            'age_max': self.age_max,
+            'travelers':[row.serialize() for row in self.traveler_to if row.authorization == "approved"],
+            'status': self.status}
+
+
+class Favorites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    trip_id = db.Column(db.Integer, db.ForeignKey("trips.id"))
+    trip_to = db.relationship("Trips", foreign_keys=[trip_id], backref=db.backref('favorite_to', lazy='select'))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_to = db.relationship("Users", foreign_keys=[user_id], backref=db.backref('favorite_to', lazy='select'))
+
+    def __repr__(self):
+        return f'<Favorite {self.id} - User {self.user_id} - Trip {self.trip_id}>'
+
+    def serialize(self):
+        return {'id': self.id,
+            'trip_id': self.trip_id,
+            'user_id': self.user_id}
+
+
+class Notifications(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(200), nullable=False)
+    read = db.Column(db.Boolean(), nullable=False, default=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_to = db.relationship("Users", foreign_keys=[user_id], backref=db.backref('notification_to', lazy='select'))
+
+    def __repr__(self):
+        return f'<Notification {self.id} - User {self.user_id} - Read {self.read}>'
+
+    def serialize(self):
+        return {'id': self.id,
+            'user_id': self.user_id,
+            'message': self.message,
+            'read': self.read,
+            'date': self.date.strftime()}
+
+
+class Travelers(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    authorization = db.Column(db.Enum('approved', 'declined', 'pending', 'cancelled', 'removed', name='authorization'), default="pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    trip_id = db.Column(db.Integer, db.ForeignKey("trips.id"), nullable=False)
+    trip_to = db.relationship("Trips", foreign_keys=[trip_id], backref=db.backref('traveler_to', lazy='select'))
+    traveler_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False) 
+    traveler_to = db.relationship("Users", foreign_keys=[traveler_id], backref=db.backref('traveler_to', lazy='select'))
+
+    def __repr__(self):
+        return f'<Traveler {self.id} - Trip {self.trip_id} - Traveler {self.traveler_id} - Authorization {self.authorization}>'
+    # Método serialize para convertir el objeto a un formato JSON
+    def serialize(self):
+        return {'id': self.id,
+            'trip_id': self.trip_id,
+            'trip': {
+                'id': self.trip_to.id,
+                'destination': self.trip_to.destination,
+                'start_date': self.trip_to.start_date.strftime("%d %m %y")
+            },
+            'traveler_id': self.traveler_id,
+            'traveler': {
+                'id': self.traveler_to.id,
+                'first_name': self.traveler_to.first_name,
+                'last_name': self.traveler_to.last_name,
+                'date_of_birth': self.traveler_to.date_of_birth,
+                'gender': self.traveler_to.gender,
+                'biography': self.traveler_to.biography,
+                'photo': self.traveler_to.photo
+            },
+            'authorization': self.authorization, 
+            'created_at': self.created_at.strftime("%d %m %y")}
+
+

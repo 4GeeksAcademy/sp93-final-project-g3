@@ -1,0 +1,46 @@
+/* Contenido en una sola línea con separación */
+.notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+  
+  /* Texto */
+  .notification-content span {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  
+  /* Botones */
+ /* Contenedor de botones alineados */
+.notification-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  /* Estilos de los botones */
+  .approve-btn {
+    background-color: #FF5942 !important;
+    color: white !important;
+    border: none !important;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+  }
+  .approve-btn:hover {
+    background-color: #FFB3A8 !important;
+  }
+  
+  .decline-btn {
+    background-color: #5B52BC!important;
+    color: white !important;
+    border: none !important;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+  }
+  .decline-btn:hover {
+    background-color: #b4b1cf !important;
+  }

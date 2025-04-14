@@ -1,0 +1,79 @@
+/* Estilos específicos para la barra de navegación */
+
+/* Clase para elementos clickeables */
+.clickable {
+    cursor: pointer;
+}
+
+/* Eliminar subrayado de elementos clickeables */
+.nav-link.clickable {
+    text-decoration: none;
+}
+
+/* Efectos hover opcionales para mejorar la experiencia de usuario */
+.nav-link.clickable:hover {
+    opacity: 0.8;
+}
+
+/* Puedes añadir también estilos específicos para los botones en el navbar */
+.navbar-custom .btn {
+    transition: all 0.3s ease;
+}
+
+/* Otros estilos personalizados para tu navbar pueden ir aquí */
+/* Ajuste del alto del navbar */
+/* Reducir altura general del navbar */
+.navbar-custom {
+    background-color: #5B52BC !important;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    font-size: 0.85rem;
+}
+
+/* Logo más pequeño y responsive */
+.navbar-logo {
+    height: 40px;
+    width: auto;
+}
+
+/* Reducir tamaño de botones */
+.btn-login,
+.btn-register,
+.btn-heart,
+.btn-bell {
+    color: white;
+    padding: 4px 10px;
+    font-size: 1rem;
+    line-height: 1;
+    border-radius: 5px;
+}
+.btn-bell:hover {
+    color: #FF5942
+}
+
+/* Espacio entre íconos y avatar */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+}
+
+/* Ajustar dropdown */
+.dropdown-menu {
+    font-size: 0.85rem;
+    border-radius: 8px;
+}
+/* Badge circular en la campana */
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    width: 10px;
+    height: 10px;
+    background-color: #FF5942;
+    border-radius: 50%;
+    border: 1px solid white;
+}
