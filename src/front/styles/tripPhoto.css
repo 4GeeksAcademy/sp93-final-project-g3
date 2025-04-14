@@ -1,7 +1,7 @@
 .edit-photo-btn {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(114, 7, 7);
     border: none;
-    color: white;
+    color: rgb(128, 75, 75);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     cursor: pointer;
@@ -13,7 +13,7 @@
 }
 
 .edit-photo-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgb(80, 56, 56);
     color: #FF5942;
 }
 

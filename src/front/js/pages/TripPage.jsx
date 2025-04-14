@@ -51,52 +51,42 @@ export const TripPage = () => {
     }
 
     return (
-    <div className="container-fluid bg-light min-vh-100">
-            <div className="container mt-5">
+        <div className="container-fluid bg-light min-vh-100">
+            <div className="container">
                 <div className="card p-4 shadow-sm position-relative">
-                    <div className="position-absolute top-0 end-0 m-3">
-                        <div className="d-flex flex-row gap-2 align-items-center">
-                            {store.favorites.find(fav => fav.id === trip.id) ? (
-                                <button
-                                    className="favorite-btnliked"
-                                    onClick={() => actions.removeFavorite(tripId)}
-                                    title="Remove from favorites"
-                                >
-                                    <i className="fas fa-heart"></i>
-                                </button>
-                            ) : (
-                                <button
-                                    className="favorite-btn"
-                                    onClick={() => actions.addFavorite(tripId)}
-                                    title="Add to favorites"
-                                >
-                                    <i className="fas fa-heart"></i>
-                                </button>
-                            )}
-                            {isHost && (
-                                <button
-                                    className="edit-btn"
-                                    onClick={() => navigate(`/edit-trip/${tripId}`)}
-                                    title="Edit trip"
-                                >
-                                    <i className="fas fa-edit"></i>
-                                </button>
-                            )}
-                        </div>
-                    </div>
+
                     <div className="row align-items-center">
                         <div className="col-md-5">
                             <img
-                                src={store.trip.photo || "https://imgs.search.brave.com/vbj_HDxOJOkTMgvYVE-feghHjfAR2b_lX3ipkxQqzEw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTE4/NzQwNjY0My9lcy9m/b3RvL21hbHRhLWRl/c3Rpbm8tZGUtdmlh/amUtcG9yLWVsLW1l/ZGl0ZXJyJUMzJUEx/bmVvLW1hcnNheGxv/a2stZmlzaGluZy12/aWxsYWdlLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1LXzUy/NTJGVkdyUTNsMG15/QjdqVE12NE50Q1VG/TUhaUWlnclZkWEFq/ZHpNPQ"}
-                                alt="Trip"
+                                src={store.trip.photo || "https://t4.ftcdn.net/jpg/05/65/22/41/360_F_565224180_QNRiRQkf9Fw0dKRoZGwUknmmfk51SuSS.jpg"}
+                                alt=""
                                 className="img-fluid rounded"
                             />
                             {isHost && (
                                 <TripPhoto tripId={tripId} onUploadSuccess={handleUploadSuccess} />
                             )}
                         </div>
-
                         <div className="col-md-7">
+                            <div className="d-flex justify-content-end position-relative">
+                                <div className="d-flex gap-2 position-absolute top-0 end-0">
+                                    <div className="container">
+                                        {store.favorites.find(fav => fav.id === trip.id) ? (
+                                            <span className="favorite1-btnliked" onClick={() => actions.removeFavorite(tripId)} title="Remove from favorites">
+                                                <i className="fas fa-heart"></i>
+                                            </span>
+                                        ) : (
+                                            <span className="favorite-btn1" onClick={() => actions.addFavorite(tripId)} title="Add to favorites">
+                                                <i className="fas fa-heart"></i>
+                                            </span>
+                                        )}
+                                        {isHost && (
+                                            <span className="edit-btn1" onClick={() => navigate(`/edit-trip/${tripId}`)} title="Edit trip">
+                                                <i className="fas fa-edit"></i>
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                             <h1 className="h3">{store.trip.destination}</h1>
                             <h3><span className="insigniaVerde badge">{store.trip.status || "Tag"}</span></h3>
                             <p className="text-success fw-bold">${store.trip.budget || "50"} budget</p>
@@ -267,6 +257,6 @@ export const TripPage = () => {
                 </div>
             </div>
 
-        </div> 
+        </div>
     );
 };
