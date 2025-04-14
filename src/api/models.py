@@ -54,7 +54,7 @@ class Trips(db.Model):
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     end_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     available_seats = db.Column(db.Integer)
-    description = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.String(2000), nullable=False)
     photo = db.Column(db.String(300))  # Imagen opcional
     budget = db.Column(db.Integer, nullable=False)
     budget_currency = db.Column(db.String(), nullable=False)

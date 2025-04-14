@@ -1,5 +1,5 @@
 .edit-photo-btn {
-    background: #e91818;
+    background: #FF5942;
     border: none;
     color: rgb(253, 253, 253);
     padding: 0.5rem 1rem;
@@ -14,9 +14,9 @@
 
 .edit-photo-btn:hover {
     background: rgba(131, 129, 129, 0.329);
-    color: #e91818;
+    color: #FF5942;
 }
 
 .img-upload {
-    color:#402926;
+    color:#FF5942;
 }

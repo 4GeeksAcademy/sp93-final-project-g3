@@ -60,11 +60,11 @@ export const Community = () => {
               <div key={index} className="trip-card">
                 <div className="trip-card-image">
                   <img
-                    src={user.photo || user.imageUrl || "https://placehold.co/600x400?text=No+Image"}
+                    src={user.photo || user.imageUrl || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
                     alt={user.face || "Profile"}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = "https://placehold.co/600x400?text=No+Image";
+                      e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
                     }}
                   />
                 </div>

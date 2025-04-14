@@ -9,6 +9,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 			isLogged: false,
 			isAdmin: false,
 			trips: {},
+			userTrips: [],
 			myTrips: [],
 			finishedTrips: [],
 			searchResults: [],
@@ -281,10 +282,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				console.log("Trip successfully created", getStore().trips)
 				return data
 			},
-			updateTripPhoto: async (photoData) => {
-				// Extraer el ID del viaje y la URL de la foto
-				const { photoUrl, tripId } = photoData;
-
+			updateTripPhoto: async (photoUrl, tripId) => {
 				console.log("Actualizando foto para el viaje ID:", tripId);
 				console.log("URL de la nueva foto:", photoUrl);
 
@@ -314,7 +312,7 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 					// Actualizar el viaje seleccionado con los datos recibidos
 					const updatedTrip = data.results;
 					setStore({
-						selectedTrip: updatedTrip,
+						trip: updatedTrip,
 						trips: updatedTrip
 					});
 
@@ -366,6 +364,23 @@ const getState = ({ getStore, getActions, setStore, useState }) => {
 				const data = await response.json();
 				setStore({ trips: data.results })
 				console.log("data de get trips:", data.results);
+			},
+			getUserTrips: async (userId) => {
+				const store = getStore();
+				const uri = `${process.env.BACKEND_URL}/api/trips/user/${userId}`;
+				const options = {
+					method: 'GET',
+					headers: { "Content-Type": "application/json" },
+				};
+				const response = await fetch(uri, options);
+				console.log("get user trips:", response)
+				if (!response.ok) {
+					console.log("error getting trips:", response);
+					return
+				}
+				const data = await response.json();
+				setStore({ userTrips: data.results })
+				console.log("data de get user trips:", data.results);
 			},
 			getMyTrips: async (page = 1) => {
 				const store = getStore();

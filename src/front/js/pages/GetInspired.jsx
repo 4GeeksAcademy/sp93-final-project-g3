@@ -9,10 +9,10 @@ export const GetInspired = () => {
   const { finishedTrips, totalPages, currentPage, favorites } = store;
   const { getFinishedTrips, getFavoriteTrips} = actions;
   const navigate = useNavigate();
-  const handleSelectedTrip = (trip) => {
+/*   const handleSelectedTrip = (trip) => {
     actions.setSelectedTrip(trip)
     navigate(`/trip-page/${trip.id}`)
-  }
+  } */
 
   useEffect(() => {
     getFavoriteTrips();
@@ -111,7 +111,7 @@ export const GetInspired = () => {
                     </p>
                   )}
                 </div>
-                <button onClick={() => handleSelectedTrip(trip)} className="view-more-btn">
+                <button onClick={() => navigate(`/trip-page/${trip.id}`)} className="view-more-btn">
                   View Details <i className="fas fa-arrow-right"></i>
                 </button>
               </div>

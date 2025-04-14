@@ -23,7 +23,7 @@ export const DesignTrip = () => {
   const navigate = useNavigate();
 
   const handlePlaceSelected = (place) => {
-    const dest = place.formatted_address || place.name;
+    const dest = place.name;
     setDestination(dest);
   };
   const handleUploadSuccess = (imageUrl) => {
@@ -38,7 +38,7 @@ export const DesignTrip = () => {
       end_date: endDate,
       available_seats: parseInt(availableSeats),
       description,
-      photo: store.selectedTrip,
+      photo,
       budget: parseFloat(budget),
       budget_currency: budgetCurrency,
       age_min: ageMin ? parseInt(ageMin) : null,

@@ -17,8 +17,8 @@ export const TripPage = () => {
         navigate(`/user/${user.id}`)
     }
 
-    const handleUploadSuccess = (imageUrl) => {
-        actions.updateTripPhoto(imageUrl, tripId)
+    const handleUploadSuccess = (photoUrl) => {
+        actions.updateTripPhoto(photoUrl, tripId)
     };
 
     const handleLeaveTrip = () => {

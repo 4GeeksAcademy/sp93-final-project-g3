@@ -66,3 +66,14 @@
     font-size: 0.85rem;
     border-radius: 8px;
 }
+/* Badge circular en la campana */
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    width: 10px;
+    height: 10px;
+    background-color: #FF5942;
+    border-radius: 50%;
+    border: 1px solid white;
+}
