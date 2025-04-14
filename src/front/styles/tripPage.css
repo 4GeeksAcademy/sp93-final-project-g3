@@ -28,8 +28,8 @@
 }
 
 
-.favorite-btn,
-.edit-btn {
+.favorite-btn1,
+.edit-btn1 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -45,25 +45,40 @@
     transition: background-color 0.2s ease;
 }
 
-.favorite-btn:hover,
-.edit-btn:hover {
+.favorite-btn1:hover {
     color: #fc6c64;
+    transform: scale(1.2);
+    transition: transform 0.1s ease-in-out;
+    cursor: pointer;
 }
 
-.favorite-btnliked {
+.edit-btn1:hover {
+    color: #aaa1a1;
+    transform: scale(1.2);
+    transition: transform 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+.favorite1-btnliked {
     color: #FF5942;
-    position: absolute;
-    top: 15px;
-    right: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: color 0.3s ease;
-  }
-  .favorite-btnliked:hover {
+}
+
+.favorite1-btnliked:hover {
     color: #f58273;
-  }
+    transform: scale(1.2);
+    transition: transform 0.1s ease-in-out;
+    cursor: pointer;
+}
 
 .travelers-btn {
     display: inline-flex;
@@ -76,10 +91,15 @@
     border-radius: 5px;
     font-weight: 500;
     transition: background-color 0.3s ease;
-    align-self: flex-start; /* Align to the start of flex container */
+    align-self: flex-start;
+    /* Align to the start of flex container */
 }
 
 .travelers-btn:hover {
     background-color: #4a46a0;
     color: white;
+}
+
+.info-value {
+    background: #ffffff;
 }

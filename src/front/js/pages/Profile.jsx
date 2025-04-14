@@ -67,6 +67,7 @@ export const Profile = () => {
               <i className="fas fa-edit"></i> Edit Profile
             </button>
           )}
+          
         </div>
         <nav className="profile-tabs">
           <div className="nav nav-tabs" id="profile-tabs" role="tablist">

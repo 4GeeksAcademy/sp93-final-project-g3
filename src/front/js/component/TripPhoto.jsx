@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Cloudinary } from "@cloudinary/url-gen";
-import { AdvancedImage } from "@cloudinary/react";
-import { Resize } from "@cloudinary/url-gen/actions/resize";
 import '../../styles/tripPhoto.css';
 import { Context } from "../store/appContext";
 
@@ -39,7 +37,7 @@ export const TripPhoto = ({ tripId }) => {
           },
           (error, result) => {
             if (!error && result && result.event === "success") {
-              console.log("Imagen subida con éxito: ", result.info);
+              console.log("Photo uploaded successfully: ", result.info);
               setIsLoading(true); // Activar estado de carga
               updateTripPhoto(result.info.secure_url);
             }
@@ -83,7 +81,7 @@ export const TripPhoto = ({ tripId }) => {
   };
 
   return (
-    <div className="container text-center">
+    <div className="container text-center mt-2">
       {/* {imageUrl && (
         <div className="mb-3">
           <AdvancedImage
@@ -99,10 +97,10 @@ export const TripPhoto = ({ tripId }) => {
         disabled={isLoading}
       >
         <i className="fas fa-camera"></i>
-        {isLoading ? 'Subiendo...' : 'Edit Photo'}
+        {isLoading ? 'Uploading...' : 'Upload Picture'}
       </button>
-      {imageUrl && !isLoading && <p className="text img-upload mt-2">¡Imagen subida con éxito!</p>}
-      {isLoading && <p className="text img-upload mt-2">Actualizando la imagen...</p>}
+      {imageUrl && !isLoading && <p className="text img-upload mt-2">Photo uploaded successfully</p>}
+      {isLoading && <p className="text img-upload mt-2">...</p>}
     </div>
   );
 };

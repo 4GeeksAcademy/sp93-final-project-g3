@@ -29,7 +29,7 @@ export const UploadImage = () => {
           },
           (error, result) => {
             if (!error && result && result.event === "success") {
-              console.log("Imagen subida con éxito: ", result.info);
+              console.log("Photo uploaded successfully: ", result.info);
               setImageUrl(result.info.secure_url);
               updateProfilePhoto(result.info.secure_url);
             }
@@ -80,7 +80,7 @@ export const UploadImage = () => {
       <button id="upload_widget" className="btn edit-photo-btn d-flex align-items-center justify-content-center gap-2 m-auto">
         <i className="fas fa-camera"></i>
       </button>
-      {imageUrl && <p className="text-dark img-upload mt-2">Image uploaded successfully</p>}
+      {imageUrl && <p className="text-dark img-upload mt-2">Photo uploaded successfully</p>}
     </div>
   );
 };
