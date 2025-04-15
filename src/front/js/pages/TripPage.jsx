@@ -51,16 +51,15 @@ export const TripPage = () => {
     }
 
     return (
-        <div className="container-fluid bg-light min-vh-100">
+        <div className="container-fluid bg-light min-vh-100 p-4">
             <div className="container">
                 <div className="card p-4 shadow-sm position-relative">
-
                     <div className="row align-items-center">
-                        <div className="col-md-5">
+                        <div className="col-md-5 text-center">
                             <img
                                 src={store.trip.photo || "https://t4.ftcdn.net/jpg/05/65/22/41/360_F_565224180_QNRiRQkf9Fw0dKRoZGwUknmmfk51SuSS.jpg"}
                                 alt=""
-                                className="img-fluid rounded"
+                                className="img-fluid rounded mb-2"
                             />
                             {isHost && (
                                 <TripPhoto tripId={tripId} onUploadSuccess={handleUploadSuccess} />
@@ -90,24 +89,42 @@ export const TripPage = () => {
                             <h1 className="h3">{store.trip.destination}</h1>
                             <h3><span className="insigniaVerde badge">{store.trip.status || "Tag"}</span></h3>
                             <p className="text-success fw-bold">${store.trip.budget || "50"} budget</p>
-                            <div className="d-flex mb-3">
-                                <div className="w-50 me-2">
-                                    <h5 >Start date</h5>
-                                    <p>{store.trip.start_date}</p>
-                                </div>
+                           
+                            {/* --- Sección de Fechas --- */}
+                            <div className="d-flex mb-3 gap-3"> {/* Usando gap-3 para el margen */}
+                                {/* Elemento 1: Start Date */}
                                 <div className="w-50">
-                                    <h5>End date</h5>
-                                    <p>{store.trip.end_date}</p>
+                                    <div className="info-group">
+                                        <label className="info-label1">Start date</label>
+                                        <div className="info-value1 fs-sm px-2 py-1 d-inline-block">{store.trip.start_date}</div> {/* Texto pequeño */}
+                                    </div>
+                                </div>
+
+                                {/* Elemento 2: End Date */}
+                                <div className="w-50">
+                                    <div className="info-group">
+                                        <label className="info-label1">End date</label>
+                                        <div className="info-value1 fs-sm px-2 py-1 d-inline-block">{store.trip.end_date}</div> {/* Texto pequeño */}
+                                    </div>
                                 </div>
                             </div>
-                            <div className="d-flex mb-3">
-                                <div className="w-50 me-2">
-                                    <h5 >Min. Age</h5>
-                                    <p>{store.trip.age_min}</p>
+
+                            {/* --- Sección de Edad (Convertida) --- */}
+                            <div className="d-flex mb-3 gap-3"> {/* Usando gap-3 también aquí para consistencia */}
+                                {/* Elemento 1: Min Age */}
+                                <div className="w-50"> {/* Ya no necesita me-2 porque usamos gap */}
+                                    <div className="info-group"> {/* Misma estructura que fechas */}
+                                        <label className="info-label1">Min. Age</label> {/* Antes era h5 */}
+                                        <div className="info-value1 fs-sm px-2 py-1 d-inline-block">{store.trip.age_min}</div> {/* Antes era p, ahora con texto pequeño */}
+                                    </div>
                                 </div>
+
+                                {/* Elemento 2: Max Age */}
                                 <div className="w-50">
-                                    <h5>Max. Age</h5>
-                                    <p>{store.trip.age_max}</p>
+                                    <div className="info-group"> {/* Misma estructura */}
+                                        <label className="info-label1">Max. Age</label> {/* Antes era h5 */}
+                                        <div className="info-value1 fs-sm px-2 py-1 d-inline-block">{store.trip.age_max}</div> {/* Antes era p, ahora con texto pequeño */}
+                                    </div>
                                 </div>
                             </div>
                             {!isHost && (
@@ -142,7 +159,7 @@ export const TripPage = () => {
             <div className="container mt-4">
                 <div className="card p-4 shadow-sm">
                     <h2 className="h4">Details of the trip</h2>
-                    <p className="text-muted mt-2">{store.trip.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."}</p>
+                    <p className="info-value1 fs-sm px-2 py-1 d-inline-block">{store.trip.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit..."}</p>
                 </div>
             </div>
 

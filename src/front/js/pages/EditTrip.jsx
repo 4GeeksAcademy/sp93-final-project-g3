@@ -84,8 +84,8 @@ export const EditTrip = () => {
     }
 
     return (
-        <div className="container-fluid bg-light min-vh-100">
-            <div className="container mt-5">
+        <div className="container-fluid bg-light min-vh-100 p-4">
+            <div className="container p-2">
                 <div className="card p-4 shadow-sm position-relative">
                     <div className="position-absolute top-0 end-0 m-3">
                         <div className="d-flex flex-row gap-2 align-items-center">
@@ -100,20 +100,18 @@ export const EditTrip = () => {
                     </div>
 
                     <div className="row align-items-center">
-                        <div className="col-md-5">
+                        <div className="col-md-5 text-center">
                             <img
                                 src={store.trip.photo || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
                                 alt="Trip"
-                                className="img-fluid rounded"
+                                className="img-fluid rounded mb-2"
                             />
                             {isHost && (
                                 <TripPhoto tripId={tripId} onUploadSuccess={handleUploadSuccess} />
                             )}
                         </div>
-
                         <div className="col-md-7">
                             <h1 className="h1">{store.trip.destination}</h1>
-
                             <select className="form-select mb-2" value={status} onChange={(e) => setStatus(e.target.value)}>
                                 <option value="planning">Planning</option>
                                 <option value="finished">Finished</option>
@@ -164,7 +162,7 @@ export const EditTrip = () => {
                 </div>
             </div>
 
-            <div className="container mt-4">
+            <div className="container p-2">
                 <div className="card p-4 shadow-sm">
                     <h2 className="h4">Details of the trip</h2>
                     <textarea
@@ -176,7 +174,7 @@ export const EditTrip = () => {
                 </div>
             </div>
 
-            <div className="container mt-4">
+            <div className="container p-2">
                 <div className="card p-4 shadow-sm">
                     <h2 className="h4">Travelers</h2>
                     <div className="mt-3 d-flex flex-wrap">

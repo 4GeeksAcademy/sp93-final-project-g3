@@ -35,7 +35,7 @@ export const Navbar = () => {
 				<div className="collapse navbar-collapse " id="navbarNav">
 					<ul className="navbar-nav me-auto">
 						<li className="nav-item">
-							<a onClick={() => navigate("/get-inspired")} className="nav-link text-white" href="#">Get Inspired</a>
+							<a onClick={() => navigate("/get-inspired")} className="nav-link text-white clickable" href="#">Get Inspired</a>
 						</li>
 						<li className="nav-item">
 							<span
@@ -52,40 +52,11 @@ export const Navbar = () => {
 							</span>
 						</li>
 						<li className="nav-item">
-							<a onClick={() => navigate("/community")} className="nav-link text-white" href="#">Community</a>
+							<a onClick={() => navigate("/community")} className="nav-link text-white clickable" href="#">Community</a>
 						</li>
 					</ul>
-
 					<div className="d-flex align-items-center">
-						{/* {store.isLogged ? (
-							<div className="d-flex align-items-center">
-										<span onClick={() => navigate("/profile")} className="nav-link text-light me-3 clickable">Welcome, {store.user.first_name}</span>
-							
-										<span
-											onClick={handleLog}
-											className="nav-link text-light clickable">
-											Logout
-										</span>
-							
-								<button id="btnGroupDrop1" type="button" className="btn btn-heart me-2" data-bs-toggle="dropdown" aria-expanded="false" >
-									<i className="fas fa-heart"></i>
-								</button>
-								<button id="btnGroupDrop1" type="button" className="btn btn-bell me-2" data-bs-toggle="dropdown" aria-expanded="false" onClick={() => navigate("/notifications")}>
-									<i className="fas fa-bell"></i>
-								</button>
-							</div>
-						) : (
-							<ul className="navbar-nav me-auto mb-2 mb-lg-0">
-								<li className="nav-item">
-									<span onClick={() => navigate("/login")} className="btn btn-login me-2">Login</span>
-								</li>
-								<li className="nav-item">
-									<span onClick={() => navigate("/register")} className="btn btn-register me-2">Register</span>
-								</li>
-							</ul>
-						)} */}
 						{store.isLogged ? (
-
 							<div className="d-flex align-items-center gap-3">
 								<div className="position-relative">
 									<button
