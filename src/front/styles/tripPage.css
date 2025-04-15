@@ -103,3 +103,18 @@
 .info-value {
     background: #ffffff;
 }
+.info-label1 {
+    display: block;
+    font-size: 1.2rem;
+    color: #5B52BC;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.info-value1 {
+    padding: 0.8rem;
+    background: #ff9f9a;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #5B52BC;
+}
